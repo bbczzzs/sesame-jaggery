@@ -241,6 +241,240 @@
             transform: scaleX(0);
         }
 
+        /* Infinite Marquee Banner */
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+            background: linear-gradient(90deg, #2C2C2C 0%, #3a3a3a 50%, #2C2C2C 100%);
+        }
+
+        .marquee-content {
+            display: inline-flex;
+            animation: marquee 30s linear infinite;
+        }
+
+        .marquee-content span {
+            display: inline-flex;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Text reveal animation */
+        .text-reveal {
+            overflow: hidden;
+        }
+
+        .text-reveal span {
+            display: inline-block;
+            transform: translateY(100%);
+            animation: textReveal 0.8s ease forwards;
+        }
+
+        @keyframes textReveal {
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        /* Magnetic button hover effect */
+        .btn-magnetic {
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-magnetic::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #C4A77D, #6B7362);
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn-magnetic:hover::before {
+            opacity: 1;
+        }
+
+        /* Glassmorphism card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Floating animation */
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Glow effect */
+        .glow {
+            box-shadow: 0 0 40px rgba(196, 167, 125, 0.3);
+        }
+
+        /* Animated border gradient */
+        .border-gradient {
+            position: relative;
+            background: linear-gradient(#FDFBF7, #FDFBF7) padding-box,
+                linear-gradient(135deg, #C4A77D, #6B7362, #C4A77D) border-box;
+            border: 2px solid transparent;
+        }
+
+        /* Stagger text animation */
+        .stagger-text span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .stagger-text.visible span {
+            animation: staggerIn 0.5s ease forwards;
+        }
+
+        .stagger-text.visible span:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .stagger-text.visible span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .stagger-text.visible span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .stagger-text.visible span:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .stagger-text.visible span:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes staggerIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Rotating badge */
+        .rotate-slow {
+            animation: rotateSlow 20s linear infinite;
+        }
+
+        @keyframes rotateSlow {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Product card 3D tilt */
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        .card-3d:hover {
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.02);
+        }
+
+        /* Pulse ring effect */
+        .pulse-ring {
+            position: relative;
+        }
+
+        .pulse-ring::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 2px solid #6B7362;
+            border-radius: inherit;
+            animation: pulseRing 2s ease-out infinite;
+        }
+
+        @keyframes pulseRing {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        /* Underline animation */
+        .link-animated {
+            position: relative;
+        }
+
+        .link-animated::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: currentColor;
+            transition: width 0.3s ease;
+        }
+
+        .link-animated:hover::after {
+            width: 100%;
+        }
+
+        /* Stats counter animation */
+        .counter {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Testimonial card */
+        .testimonial-card {
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            font-size: 80px;
+            font-family: 'Cormorant Garamond', serif;
+            color: #E5DFD5;
+            line-height: 1;
+        }
+
         /* Fade in animation */
         .fade-in {
             opacity: 0;
@@ -596,6 +830,76 @@
         <div class="hidden md:flex absolute bottom-12 left-1/2 -translate-x-1/2 flex-col items-center opacity-40">
             <span class="text-[10px] tracking-widest uppercase text-stone mb-3">Scroll</span>
             <div class="w-px h-8 bg-gradient-to-b from-stone to-transparent hidden md:block"></div>
+        </div>
+    </section>
+
+    <!-- Animated Marquee Banner -->
+    <div class="marquee py-3 md:py-4">
+        <div class="marquee-content text-cream text-xs md:text-sm tracking-wider">
+            <span>✨ HOMEMADE WITH LOVE</span>
+            <span>•</span>
+            <span>🍯 PURE INGREDIENTS</span>
+            <span>•</span>
+            <span>🚚 FREE DELIVERY ON ₹399+</span>
+            <span>•</span>
+            <span>⭐ 100% NATURAL</span>
+            <span>•</span>
+            <span>🏠 SMALL BATCH COOKING</span>
+            <span>•</span>
+            <span>💝 NO PRESERVATIVES</span>
+            <span>•</span>
+            <span>✨ HOMEMADE WITH LOVE</span>
+            <span>•</span>
+            <span>🍯 PURE INGREDIENTS</span>
+            <span>•</span>
+            <span>🚚 FREE DELIVERY ON ₹399+</span>
+            <span>•</span>
+            <span>⭐ 100% NATURAL</span>
+            <span>•</span>
+            <span>🏠 SMALL BATCH COOKING</span>
+            <span>•</span>
+            <span>💝 NO PRESERVATIVES</span>
+            <span>•</span>
+        </div>
+    </div>
+
+    <!-- Trust Badges Section -->
+    <section class="py-8 md:py-12 px-4 bg-sand/30">
+        <div class="max-w-4xl mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+                <div class="text-center fade-in">
+                    <div
+                        class="w-12 h-12 mx-auto mb-3 flex items-center justify-center bg-cream rounded-full border-gradient">
+                        <span class="text-2xl">🏠</span>
+                    </div>
+                    <p class="text-xs md:text-sm font-medium text-charcoal">Home Kitchen</p>
+                    <p class="text-[10px] md:text-xs text-stone">Made Fresh Daily</p>
+                </div>
+                <div class="text-center fade-in" style="transition-delay: 0.1s;">
+                    <div
+                        class="w-12 h-12 mx-auto mb-3 flex items-center justify-center bg-cream rounded-full border-gradient">
+                        <span class="text-2xl">🌿</span>
+                    </div>
+                    <p class="text-xs md:text-sm font-medium text-charcoal">100% Natural</p>
+                    <p class="text-[10px] md:text-xs text-stone">No Preservatives</p>
+                </div>
+                <div class="text-center fade-in" style="transition-delay: 0.2s;">
+                    <div
+                        class="w-12 h-12 mx-auto mb-3 flex items-center justify-center bg-cream rounded-full border-gradient">
+                        <span class="text-2xl">⭐</span>
+                    </div>
+                    <p class="text-xs md:text-sm font-medium text-charcoal">Premium Quality</p>
+                    <p class="text-[10px] md:text-xs text-stone">Handpicked Ingredients</p>
+                </div>
+                <div class="text-center fade-in" style="transition-delay: 0.3s;">
+                    <div
+                        class="w-12 h-12 mx-auto mb-3 flex items-center justify-center bg-cream rounded-full border-gradient">
+                        <span class="text-2xl">💚</span>
+                    </div>
+                    <p class="text-xs md:text-sm font-medium text-charcoal">Made with Love</p>
+                    <p class="text-[10px] md:text-xs text-stone">Family Recipes</p>
+                </div>
+            </div>
         </div>
     </section>
 
