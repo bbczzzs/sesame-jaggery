@@ -244,6 +244,22 @@
             transform: scale(0.9);
         }
 
+        /* Variant button styles */
+        .variant-btn {
+            transition: all 0.2s ease;
+            background: transparent;
+        }
+
+        .variant-btn.active {
+            background-color: #2C2C2C;
+            color: #FDFBF7;
+            border-color: #2C2C2C;
+        }
+
+        .variant-btn:hover:not(.active) {
+            background-color: #F4F2ED;
+        }
+
         /* Add button animation */
         .add-btn {
             transition: all 0.2s ease;
@@ -467,9 +483,8 @@
             <!-- Food Cards - 2 columns on mobile -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-6">
 
-                <!-- Card 1 - Til Gud Laddu -->
-                <article class="group fade-in hover-lift" data-product="til-gud-laddu" data-name="Til Gud Laddu"
-                    data-price="249" data-img="./public/images/til-gud-laddu.jpg">
+                <!-- Card 1 - Til Gud Laddu (Multiple variants) -->
+                <article class="group fade-in hover-lift" data-product="til-gud-laddu">
                     <div class="aspect-square md:aspect-[3/4] rounded-sm overflow-hidden mb-3 md:mb-4">
                         <img src="./public/images/til-gud-laddu.jpg" alt="Til Gud Laddu - Sesame Jaggery Balls"
                             class="w-full h-full object-cover object-left group-hover:scale-105 transition-transform duration-700">
@@ -478,18 +493,30 @@
                     <h3 class="font-serif text-base md:text-xl text-charcoal mb-1">Til Gud Laddu</h3>
                     <p class="text-xs md:text-sm font-light text-stone mb-2 line-clamp-2">Traditional sesame jaggery
                         laddus.</p>
+
+                    <!-- Size Selector -->
+                    <div class="flex flex-wrap gap-1 mb-2" id="laddu-sizes">
+                        <button onclick="selectVariant('laddu', '100g', 99)"
+                            class="variant-btn text-[9px] md:text-[10px] px-2 py-1 border border-stone/30 rounded-full hover:border-charcoal transition-colors active">100g</button>
+                        <button onclick="selectVariant('laddu', '250g', 199)"
+                            class="variant-btn text-[9px] md:text-[10px] px-2 py-1 border border-stone/30 rounded-full hover:border-charcoal transition-colors">250g</button>
+                        <button onclick="selectVariant('laddu', '500g', 350)"
+                            class="variant-btn text-[9px] md:text-[10px] px-2 py-1 border border-stone/30 rounded-full hover:border-charcoal transition-colors">500g</button>
+                        <button onclick="selectVariant('laddu', '1kg', 699)"
+                            class="variant-btn text-[9px] md:text-[10px] px-2 py-1 border border-stone/30 rounded-full hover:border-charcoal transition-colors">1kg</button>
+                    </div>
+
                     <div class="flex items-center justify-between">
-                        <span class="text-sm md:text-base font-medium text-charcoal">₹249</span>
-                        <button
-                            onclick="addToCart('til-gud-laddu', 'Til Gud Laddu', 249, './public/images/til-gud-laddu.jpg')"
+                        <span id="laddu-price" class="text-sm md:text-base font-medium text-charcoal">₹99</span>
+                        <button id="laddu-add-btn"
+                            onclick="addVariantToCart('laddu', 'Til Gud Laddu', './public/images/til-gud-laddu.jpg')"
                             class="add-btn text-[10px] md:text-xs px-4 py-2 bg-charcoal text-cream rounded-full hover:bg-olive font-medium min-w-[50px]">Add</button>
                     </div>
                 </article>
 
-                <!-- Card 2 - Pure Roots Chips -->
+                <!-- Card 2 - Pure Roots Chips (Single variant) -->
                 <article class="group fade-in hover-lift" style="transition-delay: 0.1s;"
-                    data-product="pure-roots-chips" data-name="Pure Roots Chips" data-price="149"
-                    data-img="./public/images/pure-roots-chips.jpg">
+                    data-product="pure-roots-chips">
                     <div class="aspect-square md:aspect-[3/4] rounded-sm overflow-hidden mb-3 md:mb-4">
                         <img src="./public/images/pure-roots-chips.jpg" alt="Pure Roots Chips - Healthy vegetable chips"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
@@ -499,16 +526,16 @@
                     <p class="text-xs md:text-sm font-light text-stone mb-2 line-clamp-2">Crispy root vegetable chips.
                     </p>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm md:text-base font-medium text-charcoal">₹149</span>
+                        <span class="text-sm md:text-base font-medium text-charcoal">₹50</span>
                         <button
-                            onclick="addToCart('pure-roots-chips', 'Pure Roots Chips', 149, './public/images/pure-roots-chips.jpg')"
+                            onclick="addToCart('pure-roots-chips', 'Pure Roots Chips', 50, './public/images/pure-roots-chips.jpg')"
                             class="add-btn text-[10px] md:text-xs px-4 py-2 bg-charcoal text-cream rounded-full hover:bg-olive font-medium min-w-[50px]">Add</button>
                     </div>
                 </article>
 
-                <!-- Card 3 - Dryfruit Sukhdi -->
-                <article class="group fade-in hover-lift" style="transition-delay: 0.2s;" data-product="dryfruit-sukhdi"
-                    data-name="Dryfruit Sukhdi" data-price="299" data-img="./public/images/dryfruit-sukhdi.jpg">
+                <!-- Card 3 - Dryfruit Sukhdi (Single variant) -->
+                <article class="group fade-in hover-lift" style="transition-delay: 0.2s;"
+                    data-product="dryfruit-sukhdi">
                     <div class="aspect-square md:aspect-[3/4] rounded-sm overflow-hidden mb-3 md:mb-4">
                         <img src="./public/images/dryfruit-sukhdi.jpg"
                             alt="Dryfruit Sukhdi - Traditional Gujarati sweet"
@@ -517,18 +544,17 @@
                     <p class="text-[9px] md:text-xs tracking-widest uppercase text-olive mb-1">Sweets</p>
                     <h3 class="font-serif text-base md:text-xl text-charcoal mb-1">Dryfruit Sukhdi</h3>
                     <p class="text-xs md:text-sm font-light text-stone mb-2 line-clamp-2">Rich ghee sukhdi with dry
-                        fruits.</p>
+                        fruits. <span class="text-stone/60">125g</span></p>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm md:text-base font-medium text-charcoal">₹299</span>
+                        <span class="text-sm md:text-base font-medium text-charcoal">₹199</span>
                         <button
-                            onclick="addToCart('dryfruit-sukhdi', 'Dryfruit Sukhdi', 299, './public/images/dryfruit-sukhdi.jpg')"
+                            onclick="addToCart('dryfruit-sukhdi', 'Dryfruit Sukhdi (125g)', 199, './public/images/dryfruit-sukhdi.jpg')"
                             class="add-btn text-[10px] md:text-xs px-4 py-2 bg-charcoal text-cream rounded-full hover:bg-olive font-medium min-w-[50px]">Add</button>
                     </div>
                 </article>
 
-                <!-- Card 4 - Thepla Fresh -->
-                <article class="group fade-in hover-lift" style="transition-delay: 0.3s;" data-product="thepla-fresh"
-                    data-name="Thepla - Fresh" data-price="149" data-img="./public/images/thepla-fresh.png">
+                <!-- Card 4 - Thepla Fresh (2 variants) -->
+                <article class="group fade-in hover-lift" style="transition-delay: 0.3s;" data-product="thepla-fresh">
                     <div class="aspect-square md:aspect-[3/4] rounded-sm overflow-hidden mb-3 md:mb-4">
                         <img src="./public/images/thepla-fresh.png" alt="Fresh homemade Thepla"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
@@ -537,10 +563,19 @@
                     <h3 class="font-serif text-base md:text-xl text-charcoal mb-1">Thepla - Fresh</h3>
                     <p class="text-xs md:text-sm font-light text-stone mb-2 line-clamp-2">Soft, spiced flatbread made
                         fresh.</p>
+
+                    <!-- Size Selector -->
+                    <div class="flex flex-wrap gap-1 mb-2" id="thepla-sizes">
+                        <button onclick="selectVariant('thepla', '125g', 70)"
+                            class="variant-btn text-[9px] md:text-[10px] px-2 py-1 border border-stone/30 rounded-full hover:border-charcoal transition-colors active">125g</button>
+                        <button onclick="selectVariant('thepla', '250g', 140)"
+                            class="variant-btn text-[9px] md:text-[10px] px-2 py-1 border border-stone/30 rounded-full hover:border-charcoal transition-colors">250g</button>
+                    </div>
+
                     <div class="flex items-center justify-between">
-                        <span class="text-sm md:text-base font-medium text-charcoal">₹149</span>
-                        <button
-                            onclick="addToCart('thepla-fresh', 'Thepla - Fresh', 149, './public/images/thepla-fresh.png')"
+                        <span id="thepla-price" class="text-sm md:text-base font-medium text-charcoal">₹70</span>
+                        <button id="thepla-add-btn"
+                            onclick="addVariantToCart('thepla', 'Thepla - Fresh', './public/images/thepla-fresh.png')"
                             class="add-btn text-[10px] md:text-xs px-4 py-2 bg-charcoal text-cream rounded-full hover:bg-olive font-medium min-w-[50px]">Add</button>
                     </div>
                 </article>
@@ -943,6 +978,36 @@
 
         // Cart State
         let cart = JSON.parse(localStorage.getItem('sjCart')) || [];
+
+        // Variant Selection State
+        const selectedVariants = {
+            laddu: { size: '100g', price: 99 },
+            thepla: { size: '125g', price: 70 }
+        };
+
+        // Variant Selection Functions
+        function selectVariant(product, size, price) {
+            selectedVariants[product] = { size, price };
+
+            // Update price display
+            document.getElementById(`${product}-price`).textContent = '₹' + price;
+
+            // Update active button styling
+            const container = document.getElementById(`${product}-sizes`);
+            container.querySelectorAll('.variant-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === size) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function addVariantToCart(product, baseName, img) {
+            const variant = selectedVariants[product];
+            const id = `${product}-${variant.size}`;
+            const name = `${baseName} (${variant.size})`;
+            addToCart(id, name, variant.price, img);
+        }
 
         // Mobile Menu Toggle
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
