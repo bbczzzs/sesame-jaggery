@@ -907,12 +907,30 @@
 
                 <!-- Cart Footer -->
                 <div id="cartFooter" class="hidden border-t border-sand p-5 space-y-4">
+                    <!-- Free Delivery Offer Banner -->
+                    <div id="freeDeliveryOffer"
+                        class="hidden py-2 px-3 bg-gradient-to-r from-olive/10 to-accent/10 rounded-sm border border-olive/20">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">🚚</span>
+                                <div>
+                                    <p class="text-xs font-medium text-charcoal">Free Delivery Available!</p>
+                                    <p class="text-[10px] text-stone">Use code: <span
+                                            class="font-medium text-olive">FREE399DELIVERY</span></p>
+                                </div>
+                            </div>
+                            <button onclick="autoApplyFreeDelivery()"
+                                class="text-[10px] px-2 py-1 bg-olive text-cream rounded-sm hover:bg-olive/80 transition-colors">Apply</button>
+                        </div>
+                    </div>
+
                     <!-- Promo Code Section -->
                     <div class="promo-section">
                         <div class="flex gap-2">
                             <input type="text" id="promoInput" placeholder="Promo code"
                                 class="flex-1 px-3 py-2 text-sm border border-stone/30 rounded-sm bg-white focus:outline-none focus:border-olive transition-colors"
-                                onkeypress="if(event.key === 'Enter') applyPromo()">
+                                onkeypress="if(event.key === 'Enter') applyPromo()"
+                                onfocus="checkFreeDeliveryEligibility()">
                             <button onclick="applyPromo()"
                                 class="px-4 py-2 text-xs font-medium border border-charcoal text-charcoal rounded-sm hover:bg-charcoal hover:text-cream transition-colors">
                                 Apply
@@ -1217,7 +1235,8 @@
             'WELCOME10': { type: 'percent', value: 10, minOrder: 0 },
             'SAVE20': { type: 'percent', value: 20, minOrder: 300 },
             'FLAT50': { type: 'flat', value: 50, minOrder: 200 },
-            'FIRST100': { type: 'flat', value: 100, minOrder: 500 }
+            'FIRST100': { type: 'flat', value: 100, minOrder: 500 },
+            'FREE399DELIVERY': { type: 'freeDelivery', value: 50, minOrder: 399 }
         };
 
         function applyPromo() {
@@ -1274,11 +1293,30 @@
             setTimeout(() => message.classList.add('hidden'), 3000);
         }
 
+        function checkFreeDeliveryEligibility() {
+            const subtotal = getSubtotal();
+            const offer = document.getElementById('freeDeliveryOffer');
+            if (subtotal >= 399 && !appliedPromo) {
+                offer.classList.remove('hidden');
+            } else {
+                offer.classList.add('hidden');
+            }
+        }
+
+        function autoApplyFreeDelivery() {
+            document.getElementById('promoInput').value = 'FREE399DELIVERY';
+            applyPromo();
+            document.getElementById('freeDeliveryOffer').classList.add('hidden');
+        }
+
         function getDiscount() {
             if (!appliedPromo) return 0;
             const subtotal = getSubtotal();
             if (appliedPromo.type === 'percent') {
                 return Math.round(subtotal * (appliedPromo.value / 100));
+            }
+            if (appliedPromo.type === 'freeDelivery') {
+                return appliedPromo.value; // Free delivery saves ₹50
             }
             return appliedPromo.value;
         }
@@ -1294,10 +1332,17 @@
             const discountRow = document.getElementById('discountRow');
             if (discount > 0) {
                 discountRow.classList.remove('hidden');
-                document.getElementById('discountAmount').textContent = '-₹' + discount;
+                if (appliedPromo && appliedPromo.type === 'freeDelivery') {
+                    document.getElementById('discountAmount').textContent = 'FREE DELIVERY';
+                } else {
+                    document.getElementById('discountAmount').textContent = '-₹' + discount;
+                }
             } else {
                 discountRow.classList.add('hidden');
             }
+
+            // Check free delivery eligibility
+            checkFreeDeliveryEligibility();
         }
 
         // Variant Selection Functions
@@ -1546,14 +1591,13 @@
             message += `*Subtotal: ₹${subtotal}*\n`;
 
             if (appliedPromo) {
-                message += `🏷️ Promo: ${appliedPromo.code} (-₹${discount})\n`;
-                message += `*Total: ₹${total}*\n\n`;
-            } else {
-                message += `\n`;
+                if (appliedPromo.type === 'freeDelivery') {
+                    message += `🚚 FREE DELIVERY Applied!\n`;
+                } else {
+                    message += `🏷️ Promo: ${appliedPromo.code} (-₹${discount})\n`;
+                }
+                message += `*Total: ₹${total}*`;
             }
-
-            message += `📍 Please share your delivery address.\n`;
-            message += `💬 Any special requests?`;
 
             // Encode message for URL
             const encodedMessage = encodeURIComponent(message);
