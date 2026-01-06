@@ -980,6 +980,10 @@
                             <span class="text-stone text-sm">Subtotal</span>
                             <span id="cartSubtotal" class="text-charcoal">₹0</span>
                         </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-stone text-sm">Delivery</span>
+                            <span id="deliveryChargeDisplay" class="text-charcoal">₹30</span>
+                        </div>
                         <div id="discountRow" class="hidden flex justify-between items-center text-olive">
                             <span class="text-sm">Discount</span>
                             <span id="discountAmount">-₹0</span>
@@ -989,8 +993,6 @@
                             <span id="cartTotal" class="font-serif text-xl text-charcoal">₹0</span>
                         </div>
                     </div>
-
-                    <p class="text-xs text-stone/70">Delivery charges calculated at checkout</p>
                     <button onclick="orderViaWhatsApp()"
                         class="w-full py-4 bg-[#25D366] text-white text-sm tracking-wider rounded-sm hover:bg-[#128C7E] transition-colors flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -1344,27 +1346,40 @@
                 return Math.round(subtotal * (appliedPromo.value / 100));
             }
             if (appliedPromo.type === 'freeDelivery') {
-                return appliedPromo.value; // Free delivery saves ₹50
+                return 0; // Discount is 0, but delivery becomes free
             }
             return appliedPromo.value;
+        }
+
+        function getDeliveryCharge() {
+            // Free delivery if FREE399DELIVERY is applied
+            if (appliedPromo && appliedPromo.type === 'freeDelivery') {
+                return 0;
+            }
+            return 30; // Standard delivery charge
         }
 
         function updateCartTotals() {
             const subtotal = getSubtotal();
             const discount = getDiscount();
-            const total = subtotal - discount;
+            const delivery = getDeliveryCharge();
+            const total = subtotal - discount + delivery;
 
             document.getElementById('cartSubtotal').textContent = '₹' + subtotal;
             document.getElementById('cartTotal').textContent = '₹' + total;
 
+            // Update delivery display
+            const deliveryDisplay = document.getElementById('deliveryChargeDisplay');
+            if (delivery === 0) {
+                deliveryDisplay.innerHTML = '<span class="line-through text-stone/50 mr-1">₹30</span><span class="text-olive font-medium">FREE</span>';
+            } else {
+                deliveryDisplay.textContent = '₹' + delivery;
+            }
+
             const discountRow = document.getElementById('discountRow');
             if (discount > 0) {
                 discountRow.classList.remove('hidden');
-                if (appliedPromo && appliedPromo.type === 'freeDelivery') {
-                    document.getElementById('discountAmount').textContent = 'FREE DELIVERY';
-                } else {
-                    document.getElementById('discountAmount').textContent = '-₹' + discount;
-                }
+                document.getElementById('discountAmount').textContent = '-₹' + discount;
             } else {
                 discountRow.classList.add('hidden');
             }
@@ -1603,7 +1618,8 @@
 
             const subtotal = getSubtotal();
             const discount = getDiscount();
-            const total = subtotal - discount;
+            const delivery = getDeliveryCharge();
+            const total = subtotal - discount + delivery;
 
             // Build order message
             let message = `🛒 *New Order from Sesame & Jaggery Website*\n\n`;
@@ -1616,16 +1632,20 @@
             });
 
             message += `─────────────────\n`;
-            message += `*Subtotal: ₹${subtotal}*\n`;
+            message += `Subtotal: ₹${subtotal}\n`;
 
-            if (appliedPromo) {
-                if (appliedPromo.type === 'freeDelivery') {
-                    message += `🚚 FREE DELIVERY Applied!\n`;
-                } else {
-                    message += `🏷️ Promo: ${appliedPromo.code} (-₹${discount})\n`;
-                }
-                message += `*Total: ₹${total}*`;
+            if (delivery === 0) {
+                message += `🚚 Delivery: FREE\n`;
+            } else {
+                message += `Delivery: ₹${delivery}\n`;
             }
+
+            if (appliedPromo && appliedPromo.type !== 'freeDelivery' && discount > 0) {
+                message += `🏷️ Promo: ${appliedPromo.code} (-₹${discount})\n`;
+            }
+
+            message += `─────────────────\n`;
+            message += `*Total: ₹${total}*`;
 
             // Encode message for URL
             const encodedMessage = encodeURIComponent(message);
