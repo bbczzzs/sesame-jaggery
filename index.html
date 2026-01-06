@@ -1080,40 +1080,42 @@
             const footer = document.getElementById('cartFooter');
             const subtotalEl = document.getElementById('cartSubtotal');
 
+            // Clear only cart item elements, preserve emptyCartMsg
+            const existingItems = container.querySelectorAll('.cart-item');
+            existingItems.forEach(item => item.remove());
+
             if (cart.length === 0) {
-                emptyMsg.classList.remove('hidden');
+                emptyMsg.style.display = 'block';
                 footer.classList.add('hidden');
-                container.innerHTML = '';
-                container.appendChild(emptyMsg);
                 return;
             }
 
-            emptyMsg.classList.add('hidden');
+            emptyMsg.style.display = 'none';
             footer.classList.remove('hidden');
 
-            let html = '';
             cart.forEach((item, index) => {
-                html += `
-                    <div class="cart-item flex gap-4 py-3 border-b border-sand/50" style="animation-delay: ${index * 0.05}s">
-                        <img src="${item.img}" alt="${item.name}" class="w-16 h-16 object-cover rounded-sm">
-                        <div class="flex-1">
-                            <h4 class="text-sm font-medium text-charcoal">${item.name}</h4>
-                            <p class="text-sm text-stone">₹${item.price}</p>
-                            <div class="flex items-center gap-3 mt-2">
-                                <button onclick="updateQty('${item.id}', -1)" class="qty-btn w-7 h-7 flex items-center justify-center border border-stone/30 rounded-full text-stone hover:bg-sand/50 hover:border-charcoal">−</button>
-                                <span class="text-sm text-charcoal font-medium w-6 text-center">${item.qty}</span>
-                                <button onclick="updateQty('${item.id}', 1)" class="qty-btn w-7 h-7 flex items-center justify-center border border-stone/30 rounded-full text-stone hover:bg-sand/50 hover:border-charcoal">+</button>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-medium text-charcoal">₹${item.price * item.qty}</p>
-                            <button onclick="removeFromCart('${item.id}')" class="text-xs text-stone/60 hover:text-red-500 mt-2 transition-colors">Remove</button>
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item flex gap-4 py-3 border-b border-sand/50';
+                itemDiv.style.animationDelay = `${index * 0.05}s`;
+                itemDiv.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}" class="w-16 h-16 object-cover rounded-sm">
+                    <div class="flex-1">
+                        <h4 class="text-sm font-medium text-charcoal">${item.name}</h4>
+                        <p class="text-sm text-stone">₹${item.price}</p>
+                        <div class="flex items-center gap-3 mt-2">
+                            <button onclick="updateQty('${item.id}', -1)" class="qty-btn w-7 h-7 flex items-center justify-center border border-stone/30 rounded-full text-stone hover:bg-sand/50 hover:border-charcoal">−</button>
+                            <span class="text-sm text-charcoal font-medium w-6 text-center">${item.qty}</span>
+                            <button onclick="updateQty('${item.id}', 1)" class="qty-btn w-7 h-7 flex items-center justify-center border border-stone/30 rounded-full text-stone hover:bg-sand/50 hover:border-charcoal">+</button>
                         </div>
                     </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-charcoal">₹${item.price * item.qty}</p>
+                        <button onclick="removeFromCart('${item.id}')" class="text-xs text-stone/60 hover:text-red-500 mt-2 transition-colors">Remove</button>
+                    </div>
                 `;
+                container.insertBefore(itemDiv, emptyMsg);
             });
 
-            container.innerHTML = html;
             subtotalEl.textContent = '₹' + getSubtotal();
         }
 
