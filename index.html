@@ -949,6 +949,29 @@
                             <button onclick="removePromo()"
                                 class="text-xs text-stone hover:text-red-500">Remove</button>
                         </div>
+
+                        <!-- Available Promo Codes -->
+                        <div id="availableCodes" class="mt-3 pt-3 border-t border-sand/50">
+                            <p class="text-[10px] text-stone/70 uppercase tracking-wider mb-2">Available Codes</p>
+                            <div class="space-y-1">
+                                <button onclick="quickApplyCode('WELCOME10')"
+                                    class="w-full text-left px-2 py-1.5 text-xs bg-sand/30 hover:bg-sand/50 rounded-sm transition-colors flex justify-between items-center group">
+                                    <span class="font-medium text-charcoal">WELCOME10</span>
+                                    <span class="text-stone text-[10px] group-hover:text-olive">10% off</span>
+                                </button>
+                                <button onclick="quickApplyCode('FIRST100')"
+                                    class="w-full text-left px-2 py-1.5 text-xs bg-sand/30 hover:bg-sand/50 rounded-sm transition-colors flex justify-between items-center group">
+                                    <span class="font-medium text-charcoal">FIRST100</span>
+                                    <span class="text-stone text-[10px] group-hover:text-olive">₹100 off on ₹599+</span>
+                                </button>
+                                <button onclick="quickApplyCode('FREE399DELIVERY')"
+                                    class="w-full text-left px-2 py-1.5 text-xs bg-sand/30 hover:bg-sand/50 rounded-sm transition-colors flex justify-between items-center group">
+                                    <span class="font-medium text-charcoal">FREE399DELIVERY</span>
+                                    <span class="text-stone text-[10px] group-hover:text-olive">Free delivery
+                                        ₹399+</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Pricing -->
@@ -1232,11 +1255,9 @@
 
         // Valid promo codes (you can customize these!)
         const PROMO_CODES = {
-            'WELCOME10': { type: 'percent', value: 10, minOrder: 0 },
-            'SAVE20': { type: 'percent', value: 20, minOrder: 300 },
-            'FLAT50': { type: 'flat', value: 50, minOrder: 200 },
-            'FIRST100': { type: 'flat', value: 100, minOrder: 500 },
-            'FREE399DELIVERY': { type: 'freeDelivery', value: 50, minOrder: 399 }
+            'WELCOME10': { type: 'percent', value: 10, minOrder: 0, desc: '10% off on any order' },
+            'FIRST100': { type: 'flat', value: 100, minOrder: 599, desc: '₹100 off on ₹599+' },
+            'FREE399DELIVERY': { type: 'freeDelivery', value: 50, minOrder: 399, desc: 'Free delivery on ₹399+' }
         };
 
         function applyPromo() {
@@ -1273,6 +1294,7 @@
             document.getElementById('promoApplied').classList.remove('hidden');
             document.getElementById('promoCodeText').textContent = code;
             document.querySelector('.promo-section .flex.gap-2').classList.add('hidden');
+            document.getElementById('availableCodes').classList.add('hidden');
 
             updateCartTotals();
         }
@@ -1281,8 +1303,14 @@
             appliedPromo = null;
             document.getElementById('promoApplied').classList.add('hidden');
             document.querySelector('.promo-section .flex.gap-2').classList.remove('hidden');
+            document.getElementById('availableCodes').classList.remove('hidden');
             document.getElementById('promoInput').value = '';
             updateCartTotals();
+        }
+
+        function quickApplyCode(code) {
+            document.getElementById('promoInput').value = code;
+            applyPromo();
         }
 
         function showPromoMessage(text, type) {
