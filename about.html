@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Sesame & Jaggery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FDFBF7',
+                        charcoal: '#2C2C2C',
+                        stone: '#8C857A',
+                        sand: '#E5DFD5',
+                        olive: '#6B7362',
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Cormorant Garamond', serif; }
+    </style>
+</head>
+<body class="bg-cream text-charcoal">
+    <!-- Navigation -->
+    <nav class="py-4 px-4 md:px-6 border-b border-sand">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <a href="home-kitchen-demo.html" class="font-serif text-2xl tracking-wide">Sesame & Jaggery</a>
+            <a href="home-kitchen-demo.html" class="text-xs tracking-wide text-stone hover:text-charcoal">← Back to Home</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="py-12 md:py-20 px-4 md:px-6">
+        <div class="max-w-3xl mx-auto text-center">
+            <p class="text-xs tracking-widest uppercase text-stone mb-4">About Us</p>
+            <h1 class="font-serif text-3xl md:text-5xl font-light mb-6">Our Story</h1>
+            <p class="text-lg md:text-xl font-light text-stone leading-relaxed">
+                Food made with love, served with warmth
+            </p>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <main class="pb-16 md:pb-24 px-4 md:px-6">
+        <div class="max-w-3xl mx-auto">
+            <div class="space-y-12 text-sm md:text-base font-light leading-relaxed text-stone">
+                
+                <!-- Image -->
+                <div class="aspect-video bg-sand rounded overflow-hidden">
+                    <img src="./public/images/anime-kitchen.jpg?v=3" alt="Sesame & Jaggery - Home cooking" class="w-full h-full object-cover">
+                </div>
+
+                <section>
+                    <h2 class="font-serif text-2xl md:text-3xl text-charcoal mb-4">Who We Are</h2>
+                    <p class="mb-4">Sesame & Jaggery is a home-based food venture born from a simple belief: the best food comes from home kitchens, made with patience, love, and the finest ingredients.</p>
+                    <p>We are a family passionate about preserving traditional recipes while bringing them to your table with the same care and attention that has been passed down through generations.</p>
+                </section>
+
+                <section>
+                    <h2 class="font-serif text-2xl md:text-3xl text-charcoal mb-4">Our Philosophy</h2>
+                    <p class="mb-4">In a world of mass-produced food, we choose to slow down. Every jar of pickle, every batch of snacks, every sweet treat is handcrafted in small batches. We believe food should nourish not just the body, but also the soul.</p>
+                    <div class="grid md:grid-cols-3 gap-6 mt-8">
+                        <div class="bg-sand/50 p-6 rounded text-center">
+                            <h3 class="font-serif text-xl text-charcoal mb-2">Honest</h3>
+                            <p class="text-sm">No preservatives, no shortcuts, no compromises</p>
+                        </div>
+                        <div class="bg-sand/50 p-6 rounded text-center">
+                            <h3 class="font-serif text-xl text-charcoal mb-2">Fresh</h3>
+                            <p class="text-sm">Made to order, never sitting on shelves</p>
+                        </div>
+                        <div class="bg-sand/50 p-6 rounded text-center">
+                            <h3 class="font-serif text-xl text-charcoal mb-2">Homemade</h3>
+                            <p class="text-sm">Crafted with the same love as family meals</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="font-serif text-2xl md:text-3xl text-charcoal mb-4">What We Offer</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-4">
+                            <span class="w-2 h-2 rounded-full bg-olive mt-2 flex-shrink-0"></span>
+                            <div>
+                                <strong class="text-charcoal">Achar (Pickles)</strong>
+                                <p class="mt-1">Traditional pickles made with family recipes, sun-ripened and aged to perfection</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="w-2 h-2 rounded-full bg-olive mt-2 flex-shrink-0"></span>
+                            <div>
+                                <strong class="text-charcoal">Namkeen (Snacks)</strong>
+                                <p class="mt-1">Handmade savoury snacks prepared fresh every week</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="w-2 h-2 rounded-full bg-olive mt-2 flex-shrink-0"></span>
+                            <div>
+                                <strong class="text-charcoal">Mithai (Sweets)</strong>
+                                <p class="mt-1">Pure ghee sweets made with natural sweeteners for special occasions</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="w-2 h-2 rounded-full bg-olive mt-2 flex-shrink-0"></span>
+                            <div>
+                                <strong class="text-charcoal">Thali (Meals)</strong>
+                                <p class="mt-1">Weekend home-style meals that taste like they came from your mother's kitchen</p>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2 class="font-serif text-2xl md:text-3xl text-charcoal mb-4">Our Promise</h2>
+                    <p>Every product that leaves our kitchen carries our promise of quality. We use only fresh, locally-sourced ingredients. We never use artificial preservatives or colours. What you get is pure, honest, homemade food — the way it should be.</p>
+                </section>
+
+                <section>
+                    <h2 class="font-serif text-2xl md:text-3xl text-charcoal mb-4">Location</h2>
+                    <p>We operate from our home kitchen in Virar, Mumbai, India. We currently serve customers within Virar and Mumbai areas.</p>
+                    <div class="bg-sand/50 p-6 rounded mt-6">
+                        <p class="text-charcoal font-medium">Sesame & Jaggery</p>
+                        <p class="mt-2">Virar, Mumbai<br>Maharashtra, India</p>
+                        <p class="mt-4">
+                            <a href="mailto:ishandabhi631@gmail.com" class="text-charcoal hover:underline">ishandabhi631@gmail.com</a><br>
+                            <a href="https://wa.me/917262053438" class="text-charcoal hover:underline">+91 72620 53438</a>
+                        </p>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-sand">
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between text-xs text-stone">
+            <p>© 2026 Sesame & Jaggery. All rights reserved.</p>
+            <div class="flex gap-4 mt-4 md:mt-0">
+                <a href="terms.html" class="hover:text-charcoal">Terms</a>
+                <a href="privacy.html" class="hover:text-charcoal">Privacy</a>
+                <a href="contact.html" class="hover:text-charcoal">Contact</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

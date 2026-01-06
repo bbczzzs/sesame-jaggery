@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesame & Jaggery — Slow Food, Made With Care</title>
+    <meta name="description" content="Thoughtfully prepared food, crafted in small batches from our home kitchen using honest ingredients and traditional methods.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FDFBF7',
+                        warmWhite: '#F9F7F3',
+                        sand: '#E5DFD5',
+                        stone: '#8C857A',
+                        clay: '#A6927F',
+                        olive: '#6B7362',
+                        charcoal: '#2C2C2C',
+                        softGray: '#F4F2ED',
+                        accent: '#C4A77D',
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans: ['Inter', 'Helvetica Neue', 'sans-serif'],
+                    },
+                    letterSpacing: {
+                        'widest-xl': '0.25em',
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 1s ease-out forwards',
+                        'fade-in': 'fadeIn 1.2s ease-out forwards',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background-color: #FDFBF7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Subtle grain texture for premium feel */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+        
+        /* Fade in animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Stagger children */
+        .fade-in-stagger > * {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .fade-in-stagger.visible > *:nth-child(1) { animation: fadeUp 0.8s 0.1s ease-out forwards; }
+        .fade-in-stagger.visible > *:nth-child(2) { animation: fadeUp 0.8s 0.2s ease-out forwards; }
+        .fade-in-stagger.visible > *:nth-child(3) { animation: fadeUp 0.8s 0.3s ease-out forwards; }
+        .fade-in-stagger.visible > *:nth-child(4) { animation: fadeUp 0.8s 0.4s ease-out forwards; }
+        
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Subtle hover transitions */
+        .hover-lift {
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+        }
+        
+        /* Premium image treatment */
+        .premium-img {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.08) 100%);
+            pointer-events: none;
+        }
+        
+        .premium-img img {
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .premium-img:hover img {
+            transform: scale(1.03);
+        }
+        
+        /* Elegant link underline */
+        .link-underline {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .link-underline::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background-color: currentColor;
+            transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .link-underline:hover::after {
+            width: 100%;
+        }
+        
+        /* Cart item animations */
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
+        }
+        
+        .cart-item {
+            animation: slideInRight 0.4s ease-out forwards;
+        }
+        
+        .cart-item:nth-child(1) { animation-delay: 0s; }
+        .cart-item:nth-child(2) { animation-delay: 0.05s; }
+        .cart-item:nth-child(3) { animation-delay: 0.1s; }
+        .cart-item:nth-child(4) { animation-delay: 0.15s; }
+        .cart-item:nth-child(5) { animation-delay: 0.2s; }
+        
+        .qty-btn {
+            transition: all 0.15s ease;
+        }
+        
+        .qty-btn:active {
+            transform: scale(0.9);
+        }
+        
+        /* Add button animation */
+        .add-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .add-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Premium button */
+        .btn-premium {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+        
+        .btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .btn-premium:hover::before {
+            left: 100%;
+        }
+        
+        /* Thin divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #E5DFD5, transparent);
+        }
+        
+        /* Elegant selection */
+        ::selection {
+            background-color: #C4A77D;
+            color: #fff;
+        }
+        
+        /* Smooth scroll offset for fixed nav */
+        :target {
+            scroll-margin-top: 100px;
+        }
+    </style>
+</head>
+<body class="font-sans text-charcoal antialiased">
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-cream/95 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+            <div class="flex items-center justify-between h-14 md:h-20">
+                <!-- Logo -->
+                <a href="#" class="font-serif text-2xl tracking-wide text-charcoal">
+                    Sesame & Jaggery
+                </a>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-12">
+                    <a href="#food" class="text-sm font-light tracking-wide text-stone hover:text-charcoal transition-colors duration-300">Food</a>
+                    <a href="#story" class="text-sm font-light tracking-wide text-stone hover:text-charcoal transition-colors duration-300">Story</a>
+                    <a href="#journal" class="text-sm font-light tracking-wide text-stone hover:text-charcoal transition-colors duration-300">Journal</a>
+                    <button onclick="openCart()" class="relative text-sm font-light tracking-wide text-stone hover:text-charcoal transition-colors duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        <span id="cartCountDesktop" class="hidden absolute -top-2 -right-2 w-4 h-4 bg-charcoal text-cream text-[10px] rounded-full flex items-center justify-center">0</span>
+                    </button>
+                </div>
+                
+                <!-- Mobile Cart & Menu -->
+                <div class="md:hidden flex items-center gap-3">
+                    <button onclick="openCart()" class="relative p-2">
+                        <svg class="w-5 h-5 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        <span id="cartCountMobile" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-charcoal text-cream text-[10px] rounded-full flex items-center justify-center">0</span>
+                    </button>
+                    <button id="mobileMenuBtn" class="p-2">
+                        <svg class="w-5 h-5 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-cream border-t border-sand/30">
+            <div class="px-4 py-5 space-y-4">
+                <a href="#food" class="block text-sm font-light tracking-wide text-charcoal">Food</a>
+                <a href="#story" class="block text-sm font-light tracking-wide text-charcoal">Story</a>
+                <a href="#journal" class="block text-sm font-light tracking-wide text-charcoal">Journal</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="min-h-[60vh] md:min-h-screen flex items-center justify-center px-4 md:px-6 pt-6 md:pt-20 pb-8 md:pb-0 relative">
+        <!-- Subtle decorative element - hidden on mobile -->
+        <div class="hidden md:block absolute top-1/4 left-1/2 -translate-x-1/2 w-px h-20 bg-gradient-to-b from-transparent via-sand to-transparent opacity-60"></div>
+        
+        <div class="max-w-3xl mx-auto text-center fade-in">
+            <!-- Small Label -->
+            <p class="text-[10px] md:text-[11px] tracking-widest-xl uppercase text-stone mb-4 md:mb-10 font-light">Home Kitchen · Small Batches</p>
+            
+            <!-- Main Headline -->
+            <h1 class="font-serif text-[1.75rem] md:text-5xl lg:text-[5.5rem] font-light leading-[1.2] md:leading-[1.1] text-charcoal mb-4 md:mb-10 tracking-tight">
+                Slow food, made with<br>care at home.
+            </h1>
+            
+            <!-- Subtext -->
+            <p class="font-light text-sm md:text-xl text-stone leading-relaxed max-w-xs md:max-w-lg mx-auto mb-6 md:mb-14">
+                Thoughtfully prepared food, crafted in small batches using honest ingredients.
+            </p>
+            
+            <!-- Soft CTA -->
+            <a href="#food" class="inline-flex items-center text-sm tracking-wide text-charcoal link-underline group">
+                <span class="font-light">View Our Food</span>
+                <svg class="w-4 h-4 ml-3 transition-transform duration-500 group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+        </div>
+        
+        <!-- Scroll indicator - hidden on mobile -->
+        <div class="hidden md:flex absolute bottom-12 left-1/2 -translate-x-1/2 flex-col items-center opacity-40">
+            <span class="text-[10px] tracking-widest uppercase text-stone mb-3">Scroll</span>
+            <div class="w-px h-8 bg-gradient-to-b from-stone to-transparent hidden md:block"></div>
+        </div>
+    </section>
+    
+    <!-- Divider - hidden on mobile -->
+    <div class="divider max-w-4xl mx-auto hidden md:block"></div>
+    
+    <!-- Philosophy Section -->
+    <section id="story" class="py-8 md:py-24 lg:py-32 px-4 md:px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-6 lg:gap-20 items-center">
+                <!-- Image -->
+                <div class="fade-in">
+                    <div class="aspect-[16/10] md:aspect-[4/5] rounded-sm premium-img bg-sand overflow-hidden">
+                        <img src="./public/images/anime-kitchen.jpg?v=3" alt="Anime family enjoying homemade food together" class="w-full h-full object-cover object-center">
+                    </div>
+                </div>
+                
+                <!-- Content -->
+                <div class="fade-in lg:pl-8">
+                    <!-- Label -->
+                    <p class="text-[10px] md:text-xs tracking-widest-xl uppercase text-stone mb-3 md:mb-6">Philosophy</p>
+                    
+                    <!-- Title -->
+                    <h2 class="font-serif text-2xl md:text-4xl lg:text-5xl font-light leading-tight text-charcoal mb-4 md:mb-8">
+                        Food made the way it should be
+                    </h2>
+                    
+                    <!-- Description -->
+                    <div class="space-y-4 md:space-y-6 text-stone font-light leading-relaxed text-sm md:text-base">
+                        <p>
+                            Our kitchen is our home. Every morning begins with selecting the freshest ingredients from local markets — vegetables still carrying the morning dew, spices ground by hand.
+                        </p>
+                        <p>
+                            No preservatives, no artificial colours. Just patient cooking and small batches.
+                        </p>
+                    </div>
+                    
+                    <!-- Link -->
+                    <a href="#" class="inline-flex items-center text-sm tracking-wide text-charcoal mt-6 md:mt-10 link-underline group">
+                        <span>Read Our Story</span>
+                        <svg class="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Food / Menu Section -->
+    <section id="food" class="py-12 md:py-24 lg:py-32 px-4 md:px-6 bg-softGray">
+        <div class="max-w-7xl mx-auto">
+            <!-- Section Header -->
+            <div class="text-center mb-10 md:mb-20 lg:mb-24 fade-in">
+                <p class="text-[10px] md:text-[11px] tracking-widest-xl uppercase text-stone mb-3 md:mb-5 font-light">From Our Kitchen</p>
+                <h2 class="font-serif text-2xl md:text-4xl lg:text-5xl font-light text-charcoal tracking-tight">
+                    What we make
+                </h2>
+                <div class="w-8 md:w-12 h-px bg-sand mx-auto mt-5 md:mt-8"></div>
+            </div>
+            
+            <!-- Food Cards - 2 columns on mobile -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-6">
+                
+                <!-- Card 1 - Til Gud Laddu -->
+                <article class="group fade-in hover-lift" data-product="til-gud-laddu" data-name="Til Gud Laddu" data-price="249" data-img="./public/images/til-gud-laddu.jpg">
+                    <div class="aspect-square md:aspect-[3/4] rounded-sm overflow-hidden mb-3 md:mb-4">
+                        <img src="./public/images/til-gud-laddu.jpg" alt="Til Gud Laddu - Sesame Jaggery Balls" class="w-full h-full object-cover object-left group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <p class="text-[9px] md:text-xs tracking-widest uppercase text-olive mb-1">Signature</p>
+                    <h3 class="font-serif text-base md:text-xl text-charcoal mb-1">Til Gud Laddu</h3>
+                    <p class="text-xs md:text-sm font-light text-stone mb-2 line-clamp-2">Traditional sesame jaggery laddus.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm md:text-base font-medium text-charcoal">₹249</span>
+                        <button onclick="addToCart('til-gud-laddu', 'Til Gud Laddu', 249, './public/images/til-gud-laddu.jpg')" class="add-btn text-[10px] md:text-xs px-4 py-2 bg-charcoal text-cream rounded-full hover:bg-olive font-medium min-w-[50px]">Add</button>
+                    </div>
+                </article>
+                
+                <!-- Card 2 - Pure Roots Chips -->
+                <article class="group fade-in hover-lift" style="transition-delay: 0.1s;" data-product="pure-roots-chips" data-name="Pure Roots Chips" data-price="149" data-img="./public/images/pure-roots-chips.jpg">
+                    <div class="aspect-square md:aspect-[3/4] rounded-sm overflow-hidden mb-3 md:mb-4">
+                        <img src="./public/images/pure-roots-chips.jpg" alt="Pure Roots Chips - Healthy vegetable chips" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <p class="text-[9px] md:text-xs tracking-widest uppercase text-olive mb-1">Snacks</p>
+                    <h3 class="font-serif text-base md:text-xl text-charcoal mb-1">Pure Roots Chips</h3>
+                    <p class="text-xs md:text-sm font-light text-stone mb-2 line-clamp-2">Crispy root vegetable chips.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm md:text-base font-medium text-charcoal">₹149</span>
+                        <button onclick="addToCart('pure-roots-chips', 'Pure Roots Chips', 149, './public/images/pure-roots-chips.jpg')" class="add-btn text-[10px] md:text-xs px-4 py-2 bg-charcoal text-cream rounded-full hover:bg-olive font-medium min-w-[50px]">Add</button>
+                    </div>
+                </article>
+                
+                <!-- Card 3 - Dryfruit Sukhdi -->
+                <article class="group fade-in hover-lift" style="transition-delay: 0.2s;" data-product="dryfruit-sukhdi" data-name="Dryfruit Sukhdi" data-price="299" data-img="./public/images/dryfruit-sukhdi.jpg">
+                    <div class="aspect-square md:aspect-[3/4] rounded-sm overflow-hidden mb-3 md:mb-4">
+                        <img src="./public/images/dryfruit-sukhdi.jpg" alt="Dryfruit Sukhdi - Traditional Gujarati sweet" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <p class="text-[9px] md:text-xs tracking-widest uppercase text-olive mb-1">Sweets</p>
+                    <h3 class="font-serif text-base md:text-xl text-charcoal mb-1">Dryfruit Sukhdi</h3>
+                    <p class="text-xs md:text-sm font-light text-stone mb-2 line-clamp-2">Rich ghee sukhdi with dry fruits.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm md:text-base font-medium text-charcoal">₹299</span>
+                        <button onclick="addToCart('dryfruit-sukhdi', 'Dryfruit Sukhdi', 299, './public/images/dryfruit-sukhdi.jpg')" class="add-btn text-[10px] md:text-xs px-4 py-2 bg-charcoal text-cream rounded-full hover:bg-olive font-medium min-w-[50px]">Add</button>
+                    </div>
+                </article>
+                
+                <!-- Card 4 - Thali -->
+                <article class="group fade-in hover-lift" style="transition-delay: 0.3s;" data-product="thali" data-name="Weekend Thali" data-price="299" data-img="https://images.unsplash.com/photo-1596797038530-2c107229654b?w=600&q=80">
+                    <div class="aspect-square md:aspect-[3/4] rounded-sm overflow-hidden mb-3 md:mb-4">
+                        <img src="https://images.unsplash.com/photo-1596797038530-2c107229654b?w=600&q=80" alt="Traditional Indian thali meal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <p class="text-[9px] md:text-xs tracking-widest uppercase text-olive mb-1">Meals</p>
+                    <h3 class="font-serif text-base md:text-xl text-charcoal mb-1">Weekend Thali</h3>
+                    <p class="text-xs md:text-sm font-light text-stone mb-2 line-clamp-2">Home-style complete meals.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm md:text-base font-medium text-charcoal">₹299</span>
+                        <button onclick="addToCart('thali', 'Weekend Thali', 299, 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=600&q=80')" class="add-btn text-[10px] md:text-xs px-4 py-2 bg-charcoal text-cream rounded-full hover:bg-olive font-medium min-w-[50px]">Add</button>
+                    </div>
+                </article>
+                
+            </div>
+        </div>
+    </section>
+    
+    <!-- Journal / Blog Section -->
+    <section id="journal" class="py-12 md:py-24 lg:py-32 px-4 md:px-6">
+        <div class="max-w-7xl mx-auto">
+            <!-- Section Header -->
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-8 md:mb-20 lg:mb-24 fade-in">
+                <div>
+                    <p class="text-[10px] md:text-[11px] tracking-widest-xl uppercase text-stone mb-3 md:mb-5 font-light">Journal</p>
+                    <h2 class="font-serif text-2xl md:text-4xl lg:text-5xl font-light text-charcoal tracking-tight">
+                        Thoughts on food
+                    </h2>
+                </div>
+                <a href="#" class="text-xs md:text-sm tracking-wide text-charcoal link-underline mt-4 md:mt-0 font-light">
+                    View All
+                </a>
+            </div>
+            
+            <!-- Blog Cards - horizontal scroll on mobile -->
+            <div class="flex md:grid md:grid-cols-3 gap-4 md:gap-8 lg:gap-10 overflow-x-auto pb-4 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
+                
+                <!-- Blog Card 1 -->
+                <article class="group fade-in hover-lift flex-shrink-0 w-[75vw] md:w-auto snap-start">
+                    <div class="aspect-[4/3] rounded-sm overflow-hidden mb-3 md:mb-6">
+                        <img src="https://images.unsplash.com/photo-1556909114-44e3e70034e2?w=700&q=80" alt="Slow cooking process" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <p class="text-[9px] md:text-xs tracking-widest uppercase text-olive mb-2">Process</p>
+                    <h3 class="font-serif text-lg md:text-2xl text-charcoal mb-2 leading-snug">
+                        Why slow cooking matters
+                    </h3>
+                    <p class="text-xs md:text-sm font-light text-stone mb-3 leading-relaxed line-clamp-2">
+                        We choose to wait. Patience makes all the difference.
+                    </p>
+                    <a href="#" class="inline-flex items-center text-[10px] md:text-xs tracking-wide text-charcoal link-underline">
+                        Read more →
+                    </a>
+                </article>
+                
+                <!-- Blog Card 2 -->
+                <article class="group fade-in hover-lift flex-shrink-0 w-[75vw] md:w-auto snap-start" style="transition-delay: 0.1s;">
+                    <div class="aspect-[4/3] rounded-sm overflow-hidden mb-3 md:mb-6">
+                        <img src="https://images.unsplash.com/photo-1506368249639-73a05d6f6488?w=700&q=80" alt="Fresh natural ingredients" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <p class="text-[9px] md:text-xs tracking-widest uppercase text-olive mb-2">Ingredients</p>
+                    <h3 class="font-serif text-lg md:text-2xl text-charcoal mb-2 leading-snug">
+                        Ingredients we trust
+                    </h3>
+                    <p class="text-xs md:text-sm font-light text-stone mb-3 leading-relaxed line-clamp-2">
+                        What goes into every dish we make.
+                    </p>
+                    <a href="#" class="inline-flex items-center text-[10px] md:text-xs tracking-wide text-charcoal link-underline">
+                        Read more →
+                    </a>
+                </article>
+                
+                <!-- Blog Card 3 -->
+                <article class="group fade-in hover-lift flex-shrink-0 w-[75vw] md:w-auto snap-start" style="transition-delay: 0.2s;">
+                    <div class="aspect-[4/3] rounded-sm overflow-hidden mb-3 md:mb-6">
+                        <img src="https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=700&q=80" alt="Warm home kitchen" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <p class="text-[9px] md:text-xs tracking-widest uppercase text-olive mb-2">Philosophy</p>
+                    <h3 class="font-serif text-lg md:text-2xl text-charcoal mb-2 leading-snug">
+                        Cooking from home
+                    </h3>
+                    <p class="text-xs md:text-sm font-light text-stone mb-3 leading-relaxed line-clamp-2">
+                        Our kitchen is our home. That makes all the difference.
+                    </p>
+                    <a href="#" class="inline-flex items-center text-[10px] md:text-xs tracking-wide text-charcoal link-underline">
+                        Read more →
+                    </a>
+                </article>
+                
+            </div>
+        </div>
+    </section>
+    
+    <!-- Add to Cart Toast Notification -->
+    <div id="cartToast" class="fixed top-20 right-4 md:right-8 z-50 transform translate-x-[120%] transition-transform duration-500 ease-out">
+        <div class="bg-charcoal text-cream px-5 py-4 rounded-sm shadow-xl flex items-center gap-3">
+            <svg class="w-5 h-5 text-olive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span id="toastText" class="text-sm">Added to cart!</span>
+            <button onclick="openCart()" class="text-xs text-cream/70 hover:text-cream ml-2 underline">View</button>
+        </div>
+    </div>
+    
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300">
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-charcoal/40" onclick="closeCart()"></div>
+        <!-- Cart Panel -->
+        <div class="absolute right-0 top-0 h-full w-full max-w-md bg-cream shadow-2xl transform transition-transform duration-500 ease-out translate-x-full" id="cartPanel">
+            <div class="flex flex-col h-full">
+                <!-- Cart Header -->
+                <div class="flex items-center justify-between p-5 border-b border-sand">
+                    <h3 class="font-serif text-xl text-charcoal">Your Cart</h3>
+                    <button onclick="closeCart()" class="p-2 hover:bg-sand/50 rounded-full transition-colors">
+                        <svg class="w-5 h-5 text-stone" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Cart Items -->
+                <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-4">
+                    <!-- Cart items will be rendered here -->
+                    <div id="emptyCartMsg" class="text-center py-12">
+                        <svg class="w-16 h-16 mx-auto text-stone/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <p class="text-stone font-light">Your cart is empty</p>
+                        <button onclick="closeCart()" class="mt-4 text-sm text-charcoal link-underline">Continue shopping</button>
+                    </div>
+                </div>
+                
+                <!-- Cart Footer -->
+                <div id="cartFooter" class="hidden border-t border-sand p-5 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-stone">Subtotal</span>
+                        <span id="cartSubtotal" class="font-serif text-xl text-charcoal">₹0</span>
+                    </div>
+                    <p class="text-xs text-stone/70">Delivery charges calculated at checkout</p>
+                    <button onclick="proceedToCheckout()" class="w-full py-4 bg-charcoal text-cream text-sm tracking-wider rounded-sm hover:bg-charcoal/90 transition-colors">
+                        Proceed to Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Checkout Section -->
+    <section id="checkout" class="py-14 md:py-28 lg:py-36 px-4 md:px-6 bg-gradient-to-b from-sand/30 to-sand/50 relative overflow-hidden hidden">
+        <div class="max-w-4xl mx-auto fade-in">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-12">
+                <!-- Order Summary -->
+                <div class="order-2 md:order-1">
+                    <h3 class="font-serif text-xl md:text-2xl text-charcoal mb-6">Order Summary</h3>
+                    <div id="checkoutItems" class="space-y-4 mb-6">
+                        <!-- Items rendered here -->
+                    </div>
+                    <div class="border-t border-stone/20 pt-4 space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-stone">Subtotal</span>
+                            <span id="checkoutSubtotal" class="text-charcoal">₹0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-stone">Delivery</span>
+                            <span id="deliveryCharge" class="text-charcoal">₹50</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-medium pt-2 border-t border-stone/20">
+                            <span class="text-charcoal">Total</span>
+                            <span id="checkoutTotal" class="font-serif text-charcoal">₹0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Checkout Form -->
+                <div class="order-1 md:order-2">
+                    <h2 class="font-serif text-2xl md:text-3xl text-charcoal mb-6">Delivery Details</h2>
+                    <form id="checkoutForm" class="space-y-4">
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Full Name *</label>
+                            <input type="text" name="name" required class="w-full px-4 py-3 bg-cream border border-stone/20 rounded-sm text-charcoal focus:outline-none focus:border-olive transition-colors" placeholder="Your name">
+                        </div>
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Phone Number *</label>
+                            <input type="tel" name="phone" required class="w-full px-4 py-3 bg-cream border border-stone/20 rounded-sm text-charcoal focus:outline-none focus:border-olive transition-colors" placeholder="+91 XXXXX XXXXX">
+                        </div>
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Delivery Address *</label>
+                            <textarea name="address" required rows="3" class="w-full px-4 py-3 bg-cream border border-stone/20 rounded-sm text-charcoal focus:outline-none focus:border-olive transition-colors resize-none" placeholder="Full address with landmark"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Special Instructions</label>
+                            <textarea name="notes" rows="2" class="w-full px-4 py-3 bg-cream border border-stone/20 rounded-sm text-charcoal focus:outline-none focus:border-olive transition-colors resize-none" placeholder="Any dietary preferences or delivery notes"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-4 mt-4 bg-charcoal text-cream text-sm tracking-wider rounded-sm hover:bg-charcoal/90 transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Place Order
+                        </button>
+                        
+                        <p class="text-[10px] md:text-xs text-center text-stone/70 mt-4">
+                            We deliver within Virar, Mumbai. Payment on delivery.
+                        </p>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Back to shopping -->
+            <div class="text-center mt-8">
+                <button onclick="backToShopping()" class="text-sm text-stone hover:text-charcoal transition-colors link-underline">
+                    ← Continue Shopping
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Order Success Modal -->
+    <div id="orderSuccessModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-charcoal/50 backdrop-blur-sm"></div>
+        <div class="relative bg-cream rounded-sm p-8 md:p-12 max-w-md w-full text-center shadow-2xl">
+            <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-olive/10 flex items-center justify-center">
+                <svg class="w-8 h-8 text-olive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h3 class="font-serif text-2xl md:text-3xl text-charcoal mb-4">Order Placed!</h3>
+            <p class="text-stone font-light mb-6">Thank you for your order. We'll contact you shortly to confirm delivery details.</p>
+            <p class="text-sm text-charcoal mb-6">Order ID: <span id="orderId" class="font-medium">#SJ0001</span></p>
+            <button onclick="closeSuccessModal()" class="px-8 py-3 bg-charcoal text-cream text-sm tracking-wider rounded-sm hover:bg-charcoal/90 transition-colors">
+                Continue Browsing
+            </button>
+        </div>
+    </div>
+    
+    <!-- Newsletter Section -->
+    <section class="py-12 md:py-28 lg:py-36 px-4 md:px-6">
+        <div class="max-w-lg mx-auto text-center fade-in">
+            <!-- Title -->
+            <h2 class="font-serif text-xl md:text-3xl lg:text-4xl font-light text-charcoal mb-3 md:mb-5 tracking-tight">
+                Join the journey
+            </h2>
+            
+            <!-- Description -->
+            <p class="text-sm md:text-base font-light text-stone leading-relaxed mb-6 md:mb-10">
+                Seasonal menus and food stories.
+            </p>
+            
+            <!-- Form - stacked on mobile -->
+            <form class="flex flex-col gap-3 max-w-sm mx-auto">
+                <input 
+                    type="email" 
+                    placeholder="Your email" 
+                    required
+                    class="w-full px-4 py-3 md:py-4 bg-softGray border border-sand/50 rounded-sm text-sm font-light text-charcoal placeholder-stone/60 focus:outline-none focus:border-stone/40 focus:bg-white transition-all duration-500"
+                >
+                <button 
+                    type="submit"
+                    class="btn-premium w-full px-6 py-3 md:py-4 bg-charcoal text-cream text-sm tracking-wider rounded-sm hover:bg-charcoal/95 transition-all duration-500"
+                >
+                    Subscribe
+                </button>
+            </form>
+            
+            <!-- Privacy Note -->
+            <p class="text-[10px] md:text-[11px] text-stone/60 mt-5 md:mt-8 tracking-wide">
+                Unsubscribe anytime
+            </p>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-10 md:py-16 px-4 md:px-6 bg-charcoal text-cream/80">
+        <div class="max-w-7xl mx-auto">
+            
+            <!-- Mobile Footer: Centered & Compact -->
+            <div class="md:hidden text-center">
+                <a href="#" class="font-serif text-2xl tracking-wide text-cream">Sesame & Jaggery</a>
+                <p class="text-xs font-light mt-2 text-cream/50">Home-cooked with love</p>
+                
+                <!-- Social Icons -->
+                <div class="flex justify-center gap-6 mt-6">
+                    <a href="https://instagram.com" target="_blank" class="text-cream/60 hover:text-cream">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <button onclick="openCart()" class="text-cream/60 hover:text-cream">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </button>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="flex justify-center gap-4 mt-6 text-xs text-cream/50">
+                    <a href="#food" class="hover:text-cream">Food</a>
+                    <span>·</span>
+                    <a href="about.html" class="hover:text-cream">About</a>
+                    <span>·</span>
+                    <a href="contact.html" class="hover:text-cream">Contact</a>
+                </div>
+                
+                <!-- Policy Links -->
+                <div class="flex justify-center gap-3 mt-4 text-[10px] text-cream/40">
+                    <a href="terms.html" class="hover:text-cream/60">Terms</a>
+                    <span>·</span>
+                    <a href="privacy.html" class="hover:text-cream/60">Privacy</a>
+                    <span>·</span>
+                    <a href="refund.html" class="hover:text-cream/60">Refund</a>
+                </div>
+                
+                <p class="text-[10px] text-cream/30 mt-4">© 2026 Sesame & Jaggery · Virar, Mumbai</p>
+            </div>
+            
+            <!-- Desktop Footer: Full Grid -->
+            <div class="hidden md:block">
+                <div class="grid md:grid-cols-4 gap-12 lg:gap-16">
+                    <div class="md:col-span-2">
+                        <a href="#" class="font-serif text-3xl tracking-wide text-cream">Sesame & Jaggery</a>
+                        <p class="text-sm font-light leading-relaxed mt-4 max-w-sm text-cream/60">Slow food from our home kitchen. Thoughtfully prepared, honestly made.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-xs tracking-widest uppercase text-cream/40 mb-6">Explore</h4>
+                        <ul class="space-y-3">
+                            <li><a href="#food" class="text-sm font-light hover:text-cream transition-colors">Our Food</a></li>
+                            <li><a href="about.html" class="text-sm font-light hover:text-cream transition-colors">About Us</a></li>
+                            <li><a href="contact.html" class="text-sm font-light hover:text-cream transition-colors">Contact</a></li>
+                            <li><button onclick="openCart()" class="text-sm font-light hover:text-cream transition-colors">Order</button></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-xs tracking-widest uppercase text-cream/40 mb-6">Connect</h4>
+                        <ul class="space-y-3">
+                            <li><a href="https://instagram.com" target="_blank" class="inline-flex items-center text-sm font-light hover:text-cream"><svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>Instagram</a></li>
+                            <li><button onclick="openCart()" class="inline-flex items-center text-sm font-light hover:text-cream"><svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>Shop Now</button></li>
+                            <li class="text-sm font-light text-cream/50 pt-2">Virar, Mumbai, India</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-cream/10 mt-16 pt-8 flex items-center justify-between">
+                    <p class="text-xs text-cream/40">© 2026 Sesame & Jaggery. All rights reserved.</p>
+                    <div class="flex gap-4 text-xs text-cream/40">
+                        <a href="terms.html" class="hover:text-cream/60">Terms</a>
+                        <a href="privacy.html" class="hover:text-cream/60">Privacy</a>
+                        <a href="refund.html" class="hover:text-cream/60">Refund</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript for Animations, Mobile Menu & Cart -->
+    <script>
+        // Cart State
+        let cart = JSON.parse(localStorage.getItem('sjCart')) || [];
+        
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+        
+        // Cart Functions
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            const countDesktop = document.getElementById('cartCountDesktop');
+            const countMobile = document.getElementById('cartCountMobile');
+            
+            if (totalItems > 0) {
+                countDesktop.textContent = totalItems;
+                countDesktop.classList.remove('hidden');
+                countMobile.textContent = totalItems;
+                countMobile.classList.remove('hidden');
+            } else {
+                countDesktop.classList.add('hidden');
+                countMobile.classList.add('hidden');
+            }
+        }
+        
+        function saveCart() {
+            localStorage.setItem('sjCart', JSON.stringify(cart));
+            updateCartCount();
+        }
+        
+        function addToCart(id, name, price, img) {
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ id, name, price, img, qty: 1 });
+            }
+            saveCart();
+            
+            // Animate the button
+            const btn = event.target;
+            btn.style.transform = 'scale(0.95)';
+            btn.style.transition = 'all 0.15s ease';
+            
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+                btn.textContent = '✓';
+                btn.classList.remove('bg-charcoal');
+                btn.classList.add('bg-olive');
+            }, 150);
+            
+            setTimeout(() => {
+                btn.textContent = 'Add';
+                btn.classList.remove('bg-olive');
+                btn.classList.add('bg-charcoal');
+            }, 1200);
+            
+            // Show toast notification
+            showCartToast(name);
+            
+            // Animate cart icon
+            animateCartIcon();
+        }
+        
+        function showCartToast(productName) {
+            const toast = document.getElementById('cartToast');
+            const toastText = document.getElementById('toastText');
+            toastText.textContent = `${productName} added!`;
+            
+            toast.style.transform = 'translateX(0)';
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateX(120%)';
+            }, 2500);
+        }
+        
+        function animateCartIcon() {
+            const icons = document.querySelectorAll('[onclick="openCart()"] svg, button[onclick="openCart()"]');
+            icons.forEach(icon => {
+                icon.style.transform = 'scale(1.3)';
+                icon.style.transition = 'transform 0.2s ease';
+                setTimeout(() => {
+                    icon.style.transform = 'scale(1)';
+                }, 200);
+            });
+            
+            // Bounce the count badges
+            const badges = [document.getElementById('cartCountDesktop'), document.getElementById('cartCountMobile')];
+            badges.forEach(badge => {
+                if (badge && !badge.classList.contains('hidden')) {
+                    badge.style.transform = 'scale(1.4)';
+                    badge.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    setTimeout(() => {
+                        badge.style.transform = 'scale(1)';
+                    }, 300);
+                }
+            });
+        }
+        
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            saveCart();
+            renderCart();
+        }
+        
+        function updateQty(id, delta) {
+            const item = cart.find(item => item.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    removeFromCart(id);
+                    return;
+                }
+            }
+            saveCart();
+            renderCart();
+        }
+        
+        function getSubtotal() {
+            return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        }
+        
+        function renderCart() {
+            const container = document.getElementById('cartItems');
+            const emptyMsg = document.getElementById('emptyCartMsg');
+            const footer = document.getElementById('cartFooter');
+            const subtotalEl = document.getElementById('cartSubtotal');
+            
+            if (cart.length === 0) {
+                emptyMsg.classList.remove('hidden');
+                footer.classList.add('hidden');
+                container.innerHTML = '';
+                container.appendChild(emptyMsg);
+                return;
+            }
+            
+            emptyMsg.classList.add('hidden');
+            footer.classList.remove('hidden');
+            
+            let html = '';
+            cart.forEach((item, index) => {
+                html += `
+                    <div class="cart-item flex gap-4 py-3 border-b border-sand/50" style="animation-delay: ${index * 0.05}s">
+                        <img src="${item.img}" alt="${item.name}" class="w-16 h-16 object-cover rounded-sm">
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-charcoal">${item.name}</h4>
+                            <p class="text-sm text-stone">₹${item.price}</p>
+                            <div class="flex items-center gap-3 mt-2">
+                                <button onclick="updateQty('${item.id}', -1)" class="qty-btn w-7 h-7 flex items-center justify-center border border-stone/30 rounded-full text-stone hover:bg-sand/50 hover:border-charcoal">−</button>
+                                <span class="text-sm text-charcoal font-medium w-6 text-center">${item.qty}</span>
+                                <button onclick="updateQty('${item.id}', 1)" class="qty-btn w-7 h-7 flex items-center justify-center border border-stone/30 rounded-full text-stone hover:bg-sand/50 hover:border-charcoal">+</button>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-medium text-charcoal">₹${item.price * item.qty}</p>
+                            <button onclick="removeFromCart('${item.id}')" class="text-xs text-stone/60 hover:text-red-500 mt-2 transition-colors">Remove</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            subtotalEl.textContent = '₹' + getSubtotal();
+        }
+        
+        function openCart() {
+            const sidebar = document.getElementById('cartSidebar');
+            const panel = document.getElementById('cartPanel');
+            
+            sidebar.style.pointerEvents = 'auto';
+            sidebar.style.opacity = '1';
+            document.body.style.overflow = 'hidden';
+            renderCart();
+            
+            requestAnimationFrame(() => {
+                panel.style.transform = 'translateX(0)';
+            });
+        }
+        
+        function closeCart() {
+            const sidebar = document.getElementById('cartSidebar');
+            const panel = document.getElementById('cartPanel');
+            
+            panel.style.transform = 'translateX(100%)';
+            sidebar.style.opacity = '0';
+            document.body.style.overflow = '';
+            
+            setTimeout(() => {
+                sidebar.style.pointerEvents = 'none';
+            }, 300);
+        }
+        
+        function proceedToCheckout() {
+            closeCart();
+            renderCheckout();
+            document.getElementById('checkout').classList.remove('hidden');
+            document.getElementById('checkout').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function renderCheckout() {
+            const container = document.getElementById('checkoutItems');
+            const subtotalEl = document.getElementById('checkoutSubtotal');
+            const totalEl = document.getElementById('checkoutTotal');
+            const deliveryCharge = 50;
+            
+            let html = '';
+            cart.forEach(item => {
+                html += `
+                    <div class="flex gap-3 items-center">
+                        <img src="${item.img}" alt="${item.name}" class="w-12 h-12 object-cover rounded-sm">
+                        <div class="flex-1">
+                            <p class="text-sm text-charcoal">${item.name}</p>
+                            <p class="text-xs text-stone">Qty: ${item.qty}</p>
+                        </div>
+                        <p class="text-sm text-charcoal">₹${item.price * item.qty}</p>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            const subtotal = getSubtotal();
+            subtotalEl.textContent = '₹' + subtotal;
+            totalEl.textContent = '₹' + (subtotal + deliveryCharge);
+        }
+        
+        function backToShopping() {
+            document.getElementById('checkout').classList.add('hidden');
+            document.getElementById('food').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function closeSuccessModal() {
+            document.getElementById('orderSuccessModal').classList.add('hidden');
+            document.getElementById('orderSuccessModal').classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+        
+        // Checkout Form Submission
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const orderData = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                notes: formData.get('notes'),
+                items: cart,
+                subtotal: getSubtotal(),
+                delivery: 50,
+                total: getSubtotal() + 50,
+                orderId: 'SJ' + Date.now().toString().slice(-6)
+            };
+            
+            // Show order ID in modal
+            document.getElementById('orderId').textContent = '#' + orderData.orderId;
+            
+            // For now, we'll just show success and log the order
+            // In production, this would send to a backend
+            console.log('Order placed:', orderData);
+            
+            // Clear cart
+            cart = [];
+            saveCart();
+            
+            // Hide checkout and show success modal
+            document.getElementById('checkout').classList.add('hidden');
+            document.getElementById('orderSuccessModal').classList.remove('hidden');
+            document.getElementById('orderSuccessModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            
+            // Reset form
+            this.reset();
+        });
+        
+        // Initialize cart count on page load
+        updateCartCount();
+        
+        // Scroll-based fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Navbar background on scroll
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-sm');
+            } else {
+                nav.classList.remove('shadow-sm');
+            }
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>
