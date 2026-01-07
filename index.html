@@ -2,6 +2,16 @@
 <html lang="en">
 
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17856440949"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'AW-17856440949');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sesame & Jaggery — Slow Food, Made With Care</title>
@@ -1208,30 +1218,14 @@
 
                 <!-- Cart Footer -->
                 <div id="cartFooter" class="hidden border-t border-sand p-5 space-y-4">
-                    <!-- Free Delivery Offer Banner -->
-                    <div id="freeDeliveryOffer"
-                        class="hidden py-2 px-3 bg-gradient-to-r from-olive/10 to-accent/10 rounded-sm border border-olive/20">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg">🚚</span>
-                                <div>
-                                    <p class="text-xs font-medium text-charcoal">Free Delivery Available!</p>
-                                    <p class="text-[10px] text-stone">Use code: <span
-                                            class="font-medium text-olive">FREE399DELIVERY</span></p>
-                                </div>
-                            </div>
-                            <button onclick="autoApplyFreeDelivery()"
-                                class="text-[10px] px-2 py-1 bg-olive text-cream rounded-sm hover:bg-olive/80 transition-colors">Apply</button>
-                        </div>
-                    </div>
+                    <!-- Free Delivery Offer Banner Removed (Auto-applied now) -->
 
                     <!-- Promo Code Section -->
                     <div class="promo-section">
                         <div class="flex gap-2">
                             <input type="text" id="promoInput" placeholder="Promo code"
                                 class="flex-1 px-3 py-2 text-sm border border-stone/30 rounded-sm bg-white focus:outline-none focus:border-olive transition-colors"
-                                onkeypress="if(event.key === 'Enter') applyPromo()"
-                                onfocus="checkFreeDeliveryEligibility()">
+                                onkeypress="if(event.key === 'Enter') applyPromo()">
                             <button onclick="applyPromo()"
                                 class="px-4 py-2 text-xs font-medium border border-charcoal text-charcoal rounded-sm hover:bg-charcoal hover:text-cream transition-colors">
                                 Apply
@@ -1265,13 +1259,8 @@
                                     <span class="font-medium text-charcoal">FIRST100</span>
                                     <span class="text-stone text-[10px] group-hover:text-olive">₹100 off on ₹599+</span>
                                 </button>
-                                <button onclick="quickApplyCode('FREE399DELIVERY')"
-                                    class="w-full text-left px-2 py-1.5 text-xs bg-sand/30 hover:bg-sand/50 rounded-sm transition-colors flex justify-between items-center group">
-                                    <span class="font-medium text-charcoal">FREE399DELIVERY</span>
-                                    <span class="text-stone text-[10px] group-hover:text-olive">Free delivery
-                                        ₹399+</span>
-                                </button>
                             </div>
+                            <p class="text-[10px] text-olive mt-2">🚚 Free delivery auto-applied on ₹399+</p>
                         </div>
                     </div>
 
@@ -1559,8 +1548,7 @@
         // Valid promo codes (you can customize these!)
         const PROMO_CODES = {
             'WELCOME10': { type: 'percent', value: 10, minOrder: 0, desc: '10% off on any order' },
-            'FIRST100': { type: 'flat', value: 100, minOrder: 599, desc: '₹100 off on ₹599+' },
-            'FREE399DELIVERY': { type: 'freeDelivery', value: 50, minOrder: 399, desc: 'Free delivery on ₹399+' }
+            'FIRST100': { type: 'flat', value: 100, minOrder: 599, desc: '₹100 off on ₹599+' }
         };
 
         function applyPromo() {
@@ -1624,21 +1612,7 @@
             setTimeout(() => message.classList.add('hidden'), 3000);
         }
 
-        function checkFreeDeliveryEligibility() {
-            const subtotal = getSubtotal();
-            const offer = document.getElementById('freeDeliveryOffer');
-            if (subtotal >= 399 && !appliedPromo) {
-                offer.classList.remove('hidden');
-            } else {
-                offer.classList.add('hidden');
-            }
-        }
 
-        function autoApplyFreeDelivery() {
-            document.getElementById('promoInput').value = 'FREE399DELIVERY';
-            applyPromo();
-            document.getElementById('freeDeliveryOffer').classList.add('hidden');
-        }
 
         function getDiscount() {
             if (!appliedPromo) return 0;
@@ -1646,15 +1620,12 @@
             if (appliedPromo.type === 'percent') {
                 return Math.round(subtotal * (appliedPromo.value / 100));
             }
-            if (appliedPromo.type === 'freeDelivery') {
-                return 0; // Discount is 0, but delivery becomes free
-            }
             return appliedPromo.value;
         }
 
         function getDeliveryCharge() {
-            // Free delivery if FREE399DELIVERY is applied
-            if (appliedPromo && appliedPromo.type === 'freeDelivery') {
+            // Automatic free delivery on orders ₹399+
+            if (getSubtotal() >= 399) {
                 return 0;
             }
             return 30; // Standard delivery charge
@@ -1684,9 +1655,6 @@
             } else {
                 discountRow.classList.add('hidden');
             }
-
-            // Check free delivery eligibility
-            checkFreeDeliveryEligibility();
         }
 
         // Variant Selection Functions
