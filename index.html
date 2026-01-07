@@ -1633,6 +1633,16 @@
 
         function updateCartTotals() {
             const subtotal = getSubtotal();
+
+            // Check if applied promo code minimum is still met
+            if (appliedPromo && appliedPromo.minOrder > 0 && subtotal < appliedPromo.minOrder) {
+                // Auto-remove promo code and show message
+                const removedCode = appliedPromo.code;
+                const minOrder = appliedPromo.minOrder;
+                removePromo();
+                showPromoMessage(`${removedCode} removed: Minimum ₹${minOrder} required`, 'error');
+            }
+
             const discount = getDiscount();
             const delivery = getDeliveryCharge();
             const total = subtotal - discount + delivery;
