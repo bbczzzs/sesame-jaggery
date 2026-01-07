@@ -49,10 +49,142 @@
         h3 {
             font-family: 'Cormorant Garamond', serif;
         }
+
+        /* ===== CUSTOM ANIMATED CURSOR ===== */
+        @media (min-width: 768px) {
+            body {
+                cursor: none;
+            }
+
+            a,
+            button,
+            input,
+            textarea,
+            select,
+            [role="button"] {
+                cursor: none;
+            }
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #C4A77D;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #C4A77D, #6B7362);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.15s ease, height 0.15s ease;
+        }
+
+        .custom-cursor.cursor-hover {
+            width: 60px;
+            height: 60px;
+            border-color: #6B7362;
+            background: rgba(196, 167, 125, 0.1);
+        }
+
+        .cursor-dot.cursor-hover {
+            width: 12px;
+            height: 12px;
+        }
+
+        .custom-cursor.cursor-click {
+            width: 30px;
+            height: 30px;
+            background: rgba(107, 115, 98, 0.2);
+        }
+
+        .cursor-dot.cursor-click {
+            width: 4px;
+            height: 4px;
+        }
+
+        .cursor-ripple {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #C4A77D;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            animation: cursorRipple 0.6s ease-out forwards;
+        }
+
+        @keyframes cursorRipple {
+            0% {
+                width: 40px;
+                height: 40px;
+                opacity: 0.8;
+            }
+
+            100% {
+                width: 100px;
+                height: 100px;
+                opacity: 0;
+            }
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: rgba(196, 167, 125, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99997;
+            transform: translate(-50%, -50%);
+            animation: cursorTrailFade 0.5s ease-out forwards;
+        }
+
+        @keyframes cursorTrailFade {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.3);
+            }
+        }
+
+        @media (max-width: 767px),
+        (hover: none) {
+
+            .custom-cursor,
+            .cursor-dot,
+            .cursor-ripple,
+            .cursor-trail {
+                display: none !important;
+            }
+
+            body {
+                cursor: auto;
+            }
+        }
     </style>
 </head>
 
 <body class="bg-cream text-charcoal">
+    <!-- Custom Animated Cursor -->
+    <div class="custom-cursor" id="customCursor"></div>
+    <div class="cursor-dot" id="cursorDot"></div>
+
     <!-- Navigation -->
     <nav class="py-4 px-4 md:px-6 border-b border-sand">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
@@ -210,6 +342,26 @@
             </div>
         </div>
     </footer>
+    <!-- Custom Cursor Script -->
+    <script>
+            (function initCustomCursor() {
+                if (window.innerWidth < 768 || 'ontouchstart' in window) return;
+                const cursor = document.getElementById('customCursor'), dot = document.getElementById('cursorDot');
+                if (!cursor || !dot) return;
+                let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0, dotX = 0, dotY = 0, isMoving = false, moveTimeout = null;
+                const cursorEasing = 0.15, dotEasing = 0.25;
+                document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; isMoving = true; clearTimeout(moveTimeout); moveTimeout = setTimeout(() => { isMoving = false; }, 100); });
+                function animateCursor() { cursorX += (mouseX - cursorX) * cursorEasing; cursorY += (mouseY - cursorY) * cursorEasing; dotX += (mouseX - dotX) * dotEasing; dotY += (mouseY - dotY) * dotEasing; cursor.style.left = `${cursorX}px`; cursor.style.top = `${cursorY}px`; dot.style.left = `${dotX}px`; dot.style.top = `${dotY}px`; requestAnimationFrame(animateCursor); }
+                animateCursor();
+                function createTrail() { if (!isMoving) return; const trail = document.createElement('div'); trail.className = 'cursor-trail'; trail.style.left = `${mouseX}px`; trail.style.top = `${mouseY}px`; document.body.appendChild(trail); setTimeout(() => trail.remove(), 500); }
+                setInterval(createTrail, 50);
+                document.querySelectorAll('a, button, input, textarea, select, [role="button"]').forEach(el => { el.addEventListener('mouseenter', () => { cursor.classList.add('cursor-hover'); dot.classList.add('cursor-hover'); }); el.addEventListener('mouseleave', () => { cursor.classList.remove('cursor-hover'); dot.classList.remove('cursor-hover'); }); });
+                document.addEventListener('mousedown', (e) => { cursor.classList.add('cursor-click'); dot.classList.add('cursor-click'); const ripple = document.createElement('div'); ripple.className = 'cursor-ripple'; ripple.style.left = `${e.clientX}px`; ripple.style.top = `${e.clientY}px`; document.body.appendChild(ripple); setTimeout(() => ripple.remove(), 600); });
+                document.addEventListener('mouseup', () => { cursor.classList.remove('cursor-click'); dot.classList.remove('cursor-click'); });
+                document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; dot.style.opacity = '0'; });
+                document.addEventListener('mouseenter', () => { cursor.style.opacity = '1'; dot.style.opacity = '1'; });
+            })();
+    </script>
 </body>
 
 </html>

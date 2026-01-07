@@ -720,6 +720,182 @@
             scroll-margin-top: 100px;
         }
 
+        /* ===== CUSTOM ANIMATED CURSOR ===== */
+
+        /* Hide default cursor on desktop */
+        @media (min-width: 768px) {
+            body {
+                cursor: none;
+            }
+
+            a,
+            button,
+            input,
+            textarea,
+            select,
+            [role="button"],
+            .clickable {
+                cursor: none;
+            }
+        }
+
+        /* Main cursor circle */
+        .custom-cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #C4A77D;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+            mix-blend-mode: difference;
+        }
+
+        /* Inner cursor dot */
+        .cursor-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #C4A77D, #6B7362);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+        }
+
+        /* Cursor hover state on interactive elements */
+        .custom-cursor.cursor-hover {
+            width: 60px;
+            height: 60px;
+            border-color: #6B7362;
+            background: rgba(196, 167, 125, 0.1);
+        }
+
+        .cursor-dot.cursor-hover {
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #6B7362, #C4A77D);
+        }
+
+        /* Cursor click state */
+        .custom-cursor.cursor-click {
+            width: 30px;
+            height: 30px;
+            border-color: #6B7362;
+            background: rgba(107, 115, 98, 0.2);
+        }
+
+        .cursor-dot.cursor-click {
+            width: 4px;
+            height: 4px;
+        }
+
+        /* Cursor text hover state (for text/paragraphs) */
+        .custom-cursor.cursor-text {
+            width: 4px;
+            height: 30px;
+            border-radius: 2px;
+            border-color: #C4A77D;
+            background: rgba(196, 167, 125, 0.5);
+        }
+
+        .cursor-dot.cursor-text {
+            opacity: 0;
+        }
+
+        /* Cursor ripple effect on click */
+        .cursor-ripple {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #C4A77D;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            animation: cursorRipple 0.6s ease-out forwards;
+        }
+
+        @keyframes cursorRipple {
+            0% {
+                width: 40px;
+                height: 40px;
+                opacity: 0.8;
+                border-width: 2px;
+            }
+
+            100% {
+                width: 100px;
+                height: 100px;
+                opacity: 0;
+                border-width: 1px;
+            }
+        }
+
+        /* Cursor trail effect */
+        .cursor-trail {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: rgba(196, 167, 125, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99997;
+            transform: translate(-50%, -50%);
+            animation: cursorTrailFade 0.5s ease-out forwards;
+        }
+
+        @keyframes cursorTrailFade {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.3);
+            }
+        }
+
+        /* Magnetic pull animation for buttons */
+        .cursor-magnetic {
+            animation: magneticPulse 0.3s ease forwards;
+        }
+
+        @keyframes magneticPulse {
+            0% {
+                border-color: #C4A77D;
+            }
+
+            50% {
+                border-color: #6B7362;
+                box-shadow: 0 0 20px rgba(196, 167, 125, 0.5);
+            }
+
+            100% {
+                border-color: #C4A77D;
+            }
+        }
+
+        /* Hide custom cursor on mobile/touch devices */
+        @media (max-width: 767px),
+        (hover: none) {
+
+            .custom-cursor,
+            .cursor-dot,
+            .cursor-ripple,
+            .cursor-trail {
+                display: none !important;
+            }
+
+            body {
+                cursor: auto;
+            }
+        }
+
         /* ===== PREMIUM ENHANCEMENTS ===== */
 
         /* Cursor glow effect */
@@ -1097,6 +1273,10 @@
 
     <!-- Cursor Glow Effect (Desktop only) -->
     <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- Custom Animated Cursor (Desktop only) -->
+    <div class="custom-cursor" id="customCursor"></div>
+    <div class="cursor-dot" id="cursorDot"></div>
 
     <!-- Floating Decorative Shapes -->
     <div class="floating-shapes">
@@ -2790,6 +2970,150 @@
                 }
             });
         });
+
+        // ===== CUSTOM ANIMATED CURSOR =====
+        (function initCustomCursor() {
+            // Only initialize on desktop devices
+            if (window.innerWidth < 768 || 'ontouchstart' in window) return;
+
+            const cursor = document.getElementById('customCursor');
+            const dot = document.getElementById('cursorDot');
+
+            if (!cursor || !dot) return;
+
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+            let dotX = 0, dotY = 0;
+            let trailInterval = null;
+            let isMoving = false;
+            let moveTimeout = null;
+
+            // Smooth easing for cursor movement
+            const cursorEasing = 0.15;
+            const dotEasing = 0.25;
+
+            // Track mouse position
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                isMoving = true;
+
+                // Reset move timeout
+                clearTimeout(moveTimeout);
+                moveTimeout = setTimeout(() => {
+                    isMoving = false;
+                }, 100);
+            });
+
+            // Animate cursor with smooth easing
+            function animateCursor() {
+                // Smooth interpolation for main cursor
+                cursorX += (mouseX - cursorX) * cursorEasing;
+                cursorY += (mouseY - cursorY) * cursorEasing;
+
+                // Faster interpolation for dot (more responsive)
+                dotX += (mouseX - dotX) * dotEasing;
+                dotY += (mouseY - dotY) * dotEasing;
+
+                cursor.style.left = `${cursorX}px`;
+                cursor.style.top = `${cursorY}px`;
+
+                dot.style.left = `${dotX}px`;
+                dot.style.top = `${dotY}px`;
+
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+
+            // Create cursor trail effect
+            function createTrail() {
+                if (!isMoving) return;
+
+                const trail = document.createElement('div');
+                trail.className = 'cursor-trail';
+                trail.style.left = `${mouseX}px`;
+                trail.style.top = `${mouseY}px`;
+                document.body.appendChild(trail);
+
+                setTimeout(() => trail.remove(), 500);
+            }
+
+            // Start trail creation (throttled)
+            trailInterval = setInterval(createTrail, 50);
+
+            // Interactive elements selectors
+            const interactiveSelectors = 'a, button, input, textarea, select, [role="button"], .clickable, .btn-magnetic, .btn-premium, .glow-btn, .hover-lift, .variant-btn, .add-btn, .qty-btn, .whatsapp-float, .link-animated, .link-underline';
+            const textSelectors = 'p, h1, h2, h3, h4, h5, h6, span, li, blockquote';
+
+            // Add hover states for interactive elements
+            document.querySelectorAll(interactiveSelectors).forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.classList.add('cursor-hover');
+                    dot.classList.add('cursor-hover');
+                });
+
+                el.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('cursor-hover');
+                    dot.classList.remove('cursor-hover');
+                });
+            });
+
+            // Click animations
+            document.addEventListener('mousedown', (e) => {
+                cursor.classList.add('cursor-click');
+                dot.classList.add('cursor-click');
+
+                // Create ripple effect
+                const ripple = document.createElement('div');
+                ripple.className = 'cursor-ripple';
+                ripple.style.left = `${e.clientX}px`;
+                ripple.style.top = `${e.clientY}px`;
+                document.body.appendChild(ripple);
+
+                setTimeout(() => ripple.remove(), 600);
+            });
+
+            document.addEventListener('mouseup', () => {
+                cursor.classList.remove('cursor-click');
+                dot.classList.remove('cursor-click');
+            });
+
+            // Hide cursor when leaving window
+            document.addEventListener('mouseleave', () => {
+                cursor.style.opacity = '0';
+                dot.style.opacity = '0';
+            });
+
+            document.addEventListener('mouseenter', () => {
+                cursor.style.opacity = '1';
+                dot.style.opacity = '1';
+            });
+
+            // Handle visibility on scroll for performance
+            let scrollTimeout;
+            window.addEventListener('scroll', () => {
+                cursor.style.opacity = '0.5';
+                dot.style.opacity = '0.5';
+
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    cursor.style.opacity = '1';
+                    dot.style.opacity = '1';
+                }, 150);
+            }, { passive: true });
+
+            // Clean up on window resize (switch to mobile)
+            window.addEventListener('resize', () => {
+                if (window.innerWidth < 768) {
+                    cursor.style.display = 'none';
+                    dot.style.display = 'none';
+                    clearInterval(trailInterval);
+                } else {
+                    cursor.style.display = 'block';
+                    dot.style.display = 'block';
+                }
+            });
+        })();
     </script>
 
 </body>
