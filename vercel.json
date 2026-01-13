@@ -8,6 +8,10 @@
     {
       "src": "public/**",
       "use": "@vercel/static"
+    },
+    {
+      "src": "nft-staking/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -34,6 +38,14 @@
     {
       "src": "/refund",
       "dest": "/refund.html"
+    },
+    {
+      "src": "/staking",
+      "dest": "/nft-staking/index.html"
+    },
+    {
+      "src": "/nft-staking/(.*)",
+      "dest": "/nft-staking/$1"
     }
   ]
 }
