@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StakeVault | NFT Staking Platform</title>
+    <meta name="description" content="Stake your NFTs and earn crypto rewards. The premier Web3 staking platform.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <span class="logo-icon">◇</span>
+                <span class="logo-text">StakeVault</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#collections">Collections</a></li>
+                <li><a href="#stake">Stake</a></li>
+                <li><a href="#rewards">Rewards</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <!-- Web3Modal Button -->
+            <w3m-button></w3m-button>
+            <button class="mobile-menu-btn" id="mobileMenu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">🔥 Earn up to 200% APY</div>
+            <h1 class="hero-title">
+                <span class="gradient-text">Stake Your NFTs</span>
+                <br>Earn Crypto Rewards
+            </h1>
+            <p class="hero-description">
+                The most trusted NFT staking platform in Web3. Stake your favorite collections and earn passive income
+                with our secure, audited smart contracts.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="scrollToSection('stake')">
+                    Start Staking
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <button class="btn btn-secondary" onclick="scrollToSection('collections')">
+                    View Collections
+                </button>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-value" data-count="12500">0</span>
+                    <span class="stat-label">NFTs Staked</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">$<span data-count="4200000">0</span></span>
+                    <span class="stat-label">Total Value Locked</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" data-count="8500">0</span>
+                    <span class="stat-label">Active Stakers</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="nft-showcase">
+                <div class="floating-nft nft-1">
+                    <img src="https://picsum.photos/seed/nft1/300/300" alt="NFT">
+                </div>
+                <div class="floating-nft nft-2">
+                    <img src="https://picsum.photos/seed/nft2/300/300" alt="NFT">
+                </div>
+                <div class="floating-nft nft-3">
+                    <img src="https://picsum.photos/seed/nft3/300/300" alt="NFT">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="collections" class="collections">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Featured</span>
+                <h2 class="section-title">Supported Collections</h2>
+                <p class="section-desc">Stake NFTs from top-tier collections and maximize your rewards</p>
+            </div>
+            <div class="collections-grid">
+                <div class="collection-card">
+                    <div class="collection-image">
+                        <img src="https://picsum.photos/seed/col1/400/400" alt="Collection">
+                        <div class="collection-badge">🔥 Hot</div>
+                    </div>
+                    <div class="collection-info">
+                        <h3>Cyber Apes</h3>
+                        <div class="collection-stats">
+                            <span class="apy">180% APY</span>
+                            <span class="staked">2,450 Staked</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="collection-card">
+                    <div class="collection-image">
+                        <img src="https://picsum.photos/seed/col2/400/400" alt="Collection">
+                        <div class="collection-badge new">✨ New</div>
+                    </div>
+                    <div class="collection-info">
+                        <h3>Pixel Punks</h3>
+                        <div class="collection-stats">
+                            <span class="apy">150% APY</span>
+                            <span class="staked">1,820 Staked</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="collection-card">
+                    <div class="collection-image">
+                        <img src="https://picsum.photos/seed/col3/400/400" alt="Collection">
+                    </div>
+                    <div class="collection-info">
+                        <h3>Meta Droids</h3>
+                        <div class="collection-stats">
+                            <span class="apy">200% APY</span>
+                            <span class="staked">3,100 Staked</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="collection-card">
+                    <div class="collection-image">
+                        <img src="https://picsum.photos/seed/col4/400/400" alt="Collection">
+                    </div>
+                    <div class="collection-info">
+                        <h3>Neon Cats</h3>
+                        <div class="collection-stats">
+                            <span class="apy">120% APY</span>
+                            <span class="staked">980 Staked</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="stake" class="staking-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Stake Now</span>
+                <h2 class="section-title">Your NFT Portfolio</h2>
+                <p class="section-desc">Select NFTs from your wallet to start earning rewards</p>
+            </div>
+
+            <div class="staking-container">
+                <div class="staking-panel">
+                    <div class="panel-header">
+                        <h3>Your NFTs</h3>
+                        <span class="nft-count" id="walletCount">0 NFTs</span>
+                    </div>
+                    <div class="nft-grid" id="walletNfts">
+                        <div class="empty-state">
+                            <div class="empty-icon">🔗</div>
+                            <p>Connect your wallet to view NFTs</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-full" id="stakeSelected" disabled>
+                        Stake Selected (0)
+                    </button>
+                </div>
+
+                <div class="staking-panel">
+                    <div class="panel-header">
+                        <h3>Staked NFTs</h3>
+                        <span class="nft-count" id="stakedCount">0 NFTs</span>
+                    </div>
+                    <div class="nft-grid" id="stakedNfts">
+                        <div class="empty-state">
+                            <div class="empty-icon">📦</div>
+                            <p>No NFTs staked yet</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-full" id="unstakeSelected" disabled>
+                        Unstake Selected (0)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rewards" class="rewards-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Earnings</span>
+                <h2 class="section-title">Your Rewards</h2>
+            </div>
+
+            <div class="rewards-dashboard">
+                <div class="reward-card main-reward">
+                    <div class="reward-icon">💎</div>
+                    <div class="reward-info">
+                        <span class="reward-label">Available to Claim</span>
+                        <span class="reward-value" id="claimableRewards">0.00 VAULT</span>
+                        <span class="reward-usd">≈ $0.00 USD</span>
+                    </div>
+                    <button class="btn btn-primary" id="claimRewards" disabled>
+                        Claim Rewards
+                    </button>
+                </div>
+
+                <div class="reward-stats">
+                    <div class="reward-card">
+                        <div class="reward-icon small">📈</div>
+                        <div class="reward-info">
+                            <span class="reward-label">Daily Rate</span>
+                            <span class="reward-value small" id="dailyRate">0.00 VAULT</span>
+                        </div>
+                    </div>
+                    <div class="reward-card">
+                        <div class="reward-icon small">🏆</div>
+                        <div class="reward-info">
+                            <span class="reward-label">Total Earned</span>
+                            <span class="reward-value small" id="totalEarned">0.00 VAULT</span>
+                        </div>
+                    </div>
+                    <div class="reward-card">
+                        <div class="reward-icon small">⏱️</div>
+                        <div class="reward-info">
+                            <span class="reward-label">Time Staked</span>
+                            <span class="reward-value small" id="timeStaked">0 days</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Simple Process</span>
+                <h2 class="section-title">How It Works</h2>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <div class="step-icon">🔗</div>
+                    <h3>Connect Wallet</h3>
+                    <p>Link your Web3 wallet to access your NFT collection</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <div class="step-icon">🖼️</div>
+                    <h3>Select NFTs</h3>
+                    <p>Choose from supported collections in your wallet</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <div class="step-icon">🔒</div>
+                    <h3>Stake & Lock</h3>
+                    <p>Confirm the transaction to stake your NFTs</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">04</div>
+                    <div class="step-icon">💰</div>
+                    <h3>Earn Rewards</h3>
+                    <p>Collect VAULT tokens daily based on your staked NFTs</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="faq-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Support</span>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What is NFT staking?</span>
+                        <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>NFT staking allows you to lock your NFTs in a smart contract and earn passive rewards in the
+                            form of tokens.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What wallets are supported?</span>
+                        <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We support MetaMask, WalletConnect, Coinbase Wallet, Trust Wallet, and 100+ other wallets
+                            through Web3Modal.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How are rewards calculated?</span>
+                        <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Rewards are calculated based on the rarity of your NFT and the duration of staking. Rarer
+                            NFTs earn higher rewards!</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Can I unstake anytime?</span>
+                        <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! There's no lock-up period. You can unstake your NFTs at any time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <span class="logo-icon">◇</span>
+                        <span class="logo-text">StakeVault</span>
+                    </a>
+                    <p>The premier NFT staking platform for the Web3 generation.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">𝕏</a>
+                        <a href="#" class="social-link">Discord</a>
+                        <a href="#" class="social-link">Telegram</a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Platform</h4>
+                        <a href="#stake">Staking</a>
+                        <a href="#collections">Collections</a>
+                        <a href="#rewards">Rewards</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <a href="#">Documentation</a>
+                        <a href="#">Smart Contracts</a>
+                        <a href="#">Audit Reports</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Risk Disclosure</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 StakeVault. All rights reserved.</p>
+                <p class="disclaimer">Trading crypto assets involves significant risk. Please do your own research.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Web3Modal SDK -->
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
