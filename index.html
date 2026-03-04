@@ -26,6 +26,11 @@
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap"
         rel="stylesheet">
 
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -1354,6 +1359,24 @@
                         <span id="cartCountDesktop"
                             class="hidden absolute -top-2 -right-2 w-4 h-4 bg-charcoal text-cream text-[10px] rounded-full flex items-center justify-center">0</span>
                     </button>
+                    <!-- Auth: Login Link -->
+                    <a href="login.html"
+                        class="auth-login-link text-sm font-light tracking-wide text-stone hover:text-charcoal transition-colors duration-300 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Login
+                    </a>
+                    <!-- Auth: Account Link (hidden by default) -->
+                    <a href="account.html"
+                        class="auth-account-link hidden text-sm font-light tracking-wide text-olive hover:text-charcoal transition-colors duration-300 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span class="auth-user-name">Account</span>
+                    </a>
                 </div>
 
                 <!-- Mobile Cart & Menu -->
@@ -1382,6 +1405,14 @@
                 <a href="#food" class="block text-sm font-light tracking-wide text-charcoal">Food</a>
                 <a href="#story" class="block text-sm font-light tracking-wide text-charcoal">Story</a>
                 <a href="#journal" class="block text-sm font-light tracking-wide text-charcoal">Journal</a>
+                <div class="border-t border-sand/30 pt-4">
+                    <a href="login.html"
+                        class="auth-login-link block text-sm font-light tracking-wide text-charcoal">Login /
+                        Register</a>
+                    <a href="account.html"
+                        class="auth-account-link hidden block text-sm font-light tracking-wide text-olive">My
+                        Account</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -2084,6 +2115,12 @@
                                 placeholder="+91 XXXXX XXXXX">
                         </div>
                         <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Email</label>
+                            <input type="email" name="email" id="checkoutEmail"
+                                class="w-full px-4 py-3 bg-cream border border-stone/20 rounded-sm text-charcoal focus:outline-none focus:border-olive transition-colors"
+                                placeholder="your@email.com (for order updates)">
+                        </div>
+                        <div>
                             <label class="block text-xs tracking-wider uppercase text-stone mb-2">Delivery Address
                                 *</label>
                             <textarea name="address" required rows="3"
@@ -2719,31 +2756,48 @@
         }
 
         // Checkout Form Submission
-        document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+        document.getElementById('checkoutForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const formData = new FormData(this);
+            const discount = getDiscount();
+            const delivery = getDeliveryCharge();
+            const subtotal = getSubtotal();
             const orderData = {
                 name: formData.get('name'),
                 phone: formData.get('phone'),
+                email: formData.get('email'),
                 address: formData.get('address'),
                 notes: formData.get('notes'),
                 items: cart,
-                subtotal: getSubtotal(),
-                delivery: 50,
-                total: getSubtotal() + 50,
-                orderId: 'SJ' + Date.now().toString().slice(-6)
+                subtotal: subtotal,
+                discount: discount,
+                delivery: delivery,
+                total: subtotal - discount + delivery,
+                promoCode: appliedPromo ? appliedPromo.code : null,
             };
 
-            // Show order ID in modal
-            document.getElementById('orderId').textContent = '#' + orderData.orderId;
+            // Try saving to Supabase if user is logged in
+            let savedOrderId = 'SJ' + Date.now().toString().slice(-6);
+            try {
+                if (supabase) {
+                    const user = await getUser();
+                    if (user) {
+                        const order = await createOrder(orderData);
+                        savedOrderId = order.order_id;
+                    }
+                }
+            } catch (err) {
+                console.warn('Supabase save failed, order still placed locally:', err);
+            }
 
-            // For now, we'll just show success and log the order
-            // In production, this would send to a backend
-            console.log('Order placed:', orderData);
+            // Show order ID in modal
+            document.getElementById('orderId').textContent = '#' + savedOrderId;
+            console.log('Order placed:', { ...orderData, orderId: savedOrderId });
 
             // Clear cart
             cart = [];
+            appliedPromo = null;
             saveCart();
 
             // Hide checkout and show success modal
@@ -3115,6 +3169,41 @@
                 }
             });
         })();
+
+        // Initialize EmailJS
+        if (typeof emailjs !== 'undefined') {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        }
+    </script>
+
+    <!-- Supabase Config (loaded after main script) -->
+    <script src="js/supabase-config.js"></script>
+
+    <!-- Auto-fill checkout email if logged in -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fillCheckoutEmail = setInterval(async () => {
+                if (supabase) {
+                    clearInterval(fillCheckoutEmail);
+                    const user = await getUser();
+                    if (user) {
+                        const emailField = document.getElementById('checkoutEmail');
+                        if (emailField && !emailField.value) {
+                            emailField.value = user.email || '';
+                        }
+                        // Also pre-fill name/phone from profile
+                        const profile = await getUserProfile();
+                        if (profile) {
+                            const nameField = document.querySelector('#checkoutForm input[name="name"]');
+                            const phoneField = document.querySelector('#checkoutForm input[name="phone"]');
+                            if (nameField && !nameField.value) nameField.value = profile.full_name || '';
+                            if (phoneField && !phoneField.value) phoneField.value = profile.phone || '';
+                        }
+                    }
+                }
+            }, 500);
+            setTimeout(() => clearInterval(fillCheckoutEmail), 10000);
+        });
     </script>
 
 </body>

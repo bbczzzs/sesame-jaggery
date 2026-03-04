@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Sesame & Jaggery</title>
+    <meta name="description"
+        content="Sign in to your Sesame & Jaggery account to track orders and manage your profile.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FDFBF7',
+                        warmWhite: '#F9F7F3',
+                        sand: '#E5DFD5',
+                        stone: '#8C857A',
+                        clay: '#A6927F',
+                        olive: '#6B7362',
+                        charcoal: '#2C2C2C',
+                        softGray: '#F4F2ED',
+                        accent: '#C4A77D',
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans: ['Inter', 'Helvetica Neue', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #FDFBF7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+
+        ::selection {
+            background-color: #C4A77D;
+            color: #fff;
+        }
+
+        /* Tab styles */
+        .auth-tab {
+            position: relative;
+            padding-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .auth-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #C4A77D, #6B7362);
+            transition: width 0.3s ease;
+        }
+
+        .auth-tab.active {
+            color: #2C2C2C;
+        }
+
+        .auth-tab.active::after {
+            width: 100%;
+        }
+
+        /* Input focus animation */
+        .auth-input {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .auth-input:focus {
+            border-color: #6B7362;
+            box-shadow: 0 0 0 3px rgba(107, 115, 98, 0.1);
+        }
+
+        /* Loader */
+        .btn-loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(253, 251, 247, 0.3);
+            border-top-color: #FDFBF7;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Slide animations */
+        .auth-panel {
+            display: none;
+            animation: fadeSlideIn 0.4s ease forwards;
+        }
+
+        .auth-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Divider */
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #E5DFD5, transparent);
+        }
+
+        /* OTP Input */
+        .otp-input {
+            width: 48px;
+            height: 56px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 500;
+            border: 1.5px solid #E5DFD5;
+            border-radius: 8px;
+            background: #FDFBF7;
+            transition: all 0.2s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #6B7362;
+            box-shadow: 0 0 0 3px rgba(107, 115, 98, 0.1);
+        }
+
+        /* Success checkmark */
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6B7362, #8C857A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: popIn 0.5s ease forwards;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.error {
+            background: #FEF2F2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+
+        .toast.success {
+            background: #F0FDF4;
+            color: #16A34A;
+            border: 1px solid #BBF7D0;
+        }
+    </style>
+</head>
+
+<body class="font-sans text-charcoal antialiased min-h-screen">
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-cream/95 backdrop-blur-sm shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+            <div class="flex items-center justify-between h-14 md:h-20">
+                <a href="index.html" class="font-serif text-2xl tracking-wide text-charcoal">
+                    Sesame & Jaggery
+                </a>
+                <div class="flex items-center gap-6">
+                    <a href="index.html"
+                        class="text-sm font-light tracking-wide text-stone hover:text-charcoal transition-colors">
+                        ← Back to Shop
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-20 md:pt-28 pb-16 px-4">
+        <div class="max-w-md mx-auto">
+
+            <!-- Header -->
+            <div class="text-center mb-8 md:mb-10">
+                <p class="text-[10px] md:text-xs tracking-widest uppercase text-stone mb-3">Welcome</p>
+                <h1 class="font-serif text-3xl md:text-4xl font-light text-charcoal mb-2">Your Account</h1>
+                <p class="text-sm text-stone font-light">Sign in to track orders and manage your profile</p>
+            </div>
+
+            <!-- Auth Card -->
+            <div class="bg-white/60 backdrop-blur-sm rounded-lg border border-sand/40 p-6 md:p-8 shadow-sm">
+
+                <!-- Google Sign In -->
+                <button onclick="signInWithGoogle()" id="googleBtn"
+                    class="w-full flex items-center justify-center gap-3 py-3.5 border border-sand/60 rounded-lg text-sm text-charcoal hover:bg-softGray hover:border-stone/30 transition-all duration-300">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                        <path fill="#34A853"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="#EA4335"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <!-- Divider -->
+                <div class="auth-divider my-6">
+                    <span class="text-xs text-stone/60">or</span>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex gap-6 mb-6 border-b border-sand/30 pb-0">
+                    <button onclick="switchTab('login')" id="tabLogin"
+                        class="auth-tab text-sm tracking-wide text-stone active">Sign In</button>
+                    <button onclick="switchTab('register')" id="tabRegister"
+                        class="auth-tab text-sm tracking-wide text-stone">Register</button>
+                    <button onclick="switchTab('otp')" id="tabOtp" class="auth-tab text-sm tracking-wide text-stone">OTP
+                        Login</button>
+                </div>
+
+                <!-- LOGIN PANEL -->
+                <div id="panelLogin" class="auth-panel active">
+                    <form onsubmit="handleLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Email</label>
+                            <input type="email" id="loginEmail" required
+                                class="auth-input w-full px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none"
+                                placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Password</label>
+                            <input type="password" id="loginPassword" required
+                                class="auth-input w-full px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none"
+                                placeholder="••••••••">
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <label class="flex items-center gap-2 text-xs text-stone cursor-pointer">
+                                <input type="checkbox" class="rounded border-sand accent-olive">
+                                Remember me
+                            </label>
+                            <button type="button" onclick="handleForgotPassword()"
+                                class="text-xs text-olive hover:text-charcoal transition-colors">
+                                Forgot password?
+                            </button>
+                        </div>
+                        <button type="submit" id="loginBtn"
+                            class="w-full py-3.5 bg-charcoal text-cream text-sm tracking-wider rounded-lg hover:bg-charcoal/90 transition-all duration-300 flex items-center justify-center gap-2">
+                            Sign In
+                        </button>
+                    </form>
+                </div>
+
+                <!-- REGISTER PANEL -->
+                <div id="panelRegister" class="auth-panel">
+                    <form onsubmit="handleRegister(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Full Name</label>
+                            <input type="text" id="registerName" required
+                                class="auth-input w-full px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none"
+                                placeholder="Your full name">
+                        </div>
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Email</label>
+                            <input type="email" id="registerEmail" required
+                                class="auth-input w-full px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none"
+                                placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Phone</label>
+                            <input type="tel" id="registerPhone"
+                                class="auth-input w-full px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none"
+                                placeholder="+91 XXXXX XXXXX">
+                        </div>
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Password</label>
+                            <input type="password" id="registerPassword" required minlength="6"
+                                class="auth-input w-full px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none"
+                                placeholder="Min 6 characters">
+                        </div>
+                        <div>
+                            <label class="block text-xs tracking-wider uppercase text-stone mb-2">Confirm
+                                Password</label>
+                            <input type="password" id="registerConfirmPassword" required minlength="6"
+                                class="auth-input w-full px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none"
+                                placeholder="Confirm your password">
+                        </div>
+                        <button type="submit" id="registerBtn"
+                            class="w-full py-3.5 bg-charcoal text-cream text-sm tracking-wider rounded-lg hover:bg-charcoal/90 transition-all duration-300 flex items-center justify-center gap-2">
+                            Create Account
+                        </button>
+                    </form>
+                </div>
+
+                <!-- OTP PANEL -->
+                <div id="panelOtp" class="auth-panel">
+                    <!-- Step 1: Enter phone -->
+                    <div id="otpStep1">
+                        <form onsubmit="handleSendOTP(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs tracking-wider uppercase text-stone mb-2">Phone
+                                    Number</label>
+                                <div class="flex gap-2">
+                                    <span
+                                        class="flex items-center px-3 bg-softGray border border-sand/50 rounded-lg text-sm text-stone">+91</span>
+                                    <input type="tel" id="otpPhone" required pattern="[0-9]{10}" maxlength="10"
+                                        class="auth-input flex-1 px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none"
+                                        placeholder="XXXXX XXXXX">
+                                </div>
+                                <p class="text-[10px] text-stone/60 mt-2">We'll send a 6-digit OTP to your phone via SMS
+                                </p>
+                            </div>
+                            <button type="submit" id="sendOtpBtn"
+                                class="w-full py-3.5 bg-charcoal text-cream text-sm tracking-wider rounded-lg hover:bg-charcoal/90 transition-all duration-300 flex items-center justify-center gap-2">
+                                Send OTP
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Step 2: Verify OTP -->
+                    <div id="otpStep2" class="hidden">
+                        <div class="text-center mb-6">
+                            <p class="text-sm text-stone">Enter the 6-digit code sent to</p>
+                            <p class="text-sm font-medium text-charcoal mt-1" id="otpPhoneDisplay">+91 XXXXX XXXXX</p>
+                        </div>
+                        <form onsubmit="handleVerifyOTP(event)" class="space-y-6">
+                            <div class="flex justify-center gap-2" id="otpInputs">
+                                <input type="text" maxlength="1" class="otp-input" data-index="0"
+                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
+                                <input type="text" maxlength="1" class="otp-input" data-index="1"
+                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
+                                <input type="text" maxlength="1" class="otp-input" data-index="2"
+                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
+                                <input type="text" maxlength="1" class="otp-input" data-index="3"
+                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
+                                <input type="text" maxlength="1" class="otp-input" data-index="4"
+                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
+                                <input type="text" maxlength="1" class="otp-input" data-index="5"
+                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
+                            </div>
+                            <button type="submit" id="verifyOtpBtn"
+                                class="w-full py-3.5 bg-charcoal text-cream text-sm tracking-wider rounded-lg hover:bg-charcoal/90 transition-all duration-300 flex items-center justify-center gap-2">
+                                Verify & Sign In
+                            </button>
+                        </form>
+                        <div class="text-center mt-4">
+                            <button onclick="resendOTP()" id="resendBtn"
+                                class="text-xs text-olive hover:text-charcoal transition-colors disabled:opacity-40"
+                                disabled>
+                                Resend OTP <span id="resendTimer">(30s)</span>
+                            </button>
+                        </div>
+                        <div class="text-center mt-2">
+                            <button onclick="backToOtpStep1()"
+                                class="text-xs text-stone hover:text-charcoal transition-colors">
+                                ← Change number
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer text -->
+            <p class="text-center text-[10px] text-stone/50 mt-6">
+                By continuing, you agree to our
+                <a href="terms.html" class="underline hover:text-stone">Terms</a> and
+                <a href="privacy.html" class="underline hover:text-stone">Privacy Policy</a>.
+            </p>
+        </div>
+    </main>
+
+    <!-- Supabase Config -->
+    <script src="js/supabase-config.js"></script>
+
+    <script>
+        // ============================================
+        // TAB SWITCHING
+        // ============================================
+        function switchTab(tab) {
+            // Update tabs
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+
+            // Update panels
+            document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+        }
+
+        // ============================================
+        // TOAST NOTIFICATION
+        // ============================================
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function setButtonLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            if (loading) {
+                btn.disabled = true;
+                btn.dataset.originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="btn-loader"></span>';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = btn.dataset.originalText || 'Submit';
+            }
+        }
+
+        // ============================================
+        // EMAIL/PASSWORD LOGIN
+        // ============================================
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            setButtonLoading('loginBtn', true);
+
+            try {
+                if (!supabase) throw new Error('Connection not ready. Please refresh.');
+
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email, password
+                });
+
+                if (error) throw error;
+
+                showToast('Welcome back! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'account.html';
+                }, 1000);
+            } catch (err) {
+                showToast(err.message || 'Login failed');
+            } finally {
+                setButtonLoading('loginBtn', false);
+            }
+        }
+
+        // ============================================
+        // REGISTRATION
+        // ============================================
+        async function handleRegister(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const phone = document.getElementById('registerPhone').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match');
+                return;
+            }
+
+            setButtonLoading('registerBtn', true);
+
+            try {
+                if (!supabase) throw new Error('Connection not ready. Please refresh.');
+
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: name,
+                            phone: phone,
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                // Create profile record
+                if (data.user) {
+                    await supabase.from('profiles').upsert({
+                        id: data.user.id,
+                        full_name: name,
+                        email: email,
+                        phone: phone,
+                        role: 'customer',
+                    });
+                }
+
+                showToast('Account created! Check your email to verify.', 'success');
+                setTimeout(() => switchTab('login'), 2000);
+            } catch (err) {
+                showToast(err.message || 'Registration failed');
+            } finally {
+                setButtonLoading('registerBtn', false);
+            }
+        }
+
+        // ============================================
+        // GOOGLE SIGN IN
+        // ============================================
+        async function signInWithGoogle() {
+            try {
+                if (!supabase) throw new Error('Connection not ready. Please refresh.');
+
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin + '/account.html'
+                    }
+                });
+
+                if (error) throw error;
+            } catch (err) {
+                showToast(err.message || 'Google sign-in failed');
+            }
+        }
+
+        // ============================================
+        // OTP LOGIN
+        // ============================================
+        let otpResendTimer = null;
+
+        async function handleSendOTP(e) {
+            e.preventDefault();
+            const phone = document.getElementById('otpPhone').value;
+
+            setButtonLoading('sendOtpBtn', true);
+
+            try {
+                if (!supabase) throw new Error('Connection not ready. Please refresh.');
+
+                const { data, error } = await supabase.auth.signInWithOtp({
+                    phone: '+91' + phone,
+                });
+
+                if (error) throw error;
+
+                // Show step 2
+                document.getElementById('otpStep1').classList.add('hidden');
+                document.getElementById('otpStep2').classList.remove('hidden');
+                document.getElementById('otpPhoneDisplay').textContent = '+91 ' + phone;
+
+                // Focus first OTP input
+                document.querySelector('.otp-input').focus();
+
+                // Start resend timer
+                startResendTimer();
+
+                showToast('OTP sent successfully!', 'success');
+            } catch (err) {
+                showToast(err.message || 'Failed to send OTP');
+            } finally {
+                setButtonLoading('sendOtpBtn', false);
+            }
+        }
+
+        async function handleVerifyOTP(e) {
+            e.preventDefault();
+            const inputs = document.querySelectorAll('.otp-input');
+            const otp = Array.from(inputs).map(i => i.value).join('');
+
+            if (otp.length !== 6) {
+                showToast('Please enter the complete 6-digit OTP');
+                return;
+            }
+
+            const phone = document.getElementById('otpPhone').value;
+            setButtonLoading('verifyOtpBtn', true);
+
+            try {
+                if (!supabase) throw new Error('Connection not ready. Please refresh.');
+
+                const { data, error } = await supabase.auth.verifyOtp({
+                    phone: '+91' + phone,
+                    token: otp,
+                    type: 'sms',
+                });
+
+                if (error) throw error;
+
+                // Create/update profile
+                if (data.user) {
+                    await supabase.from('profiles').upsert({
+                        id: data.user.id,
+                        phone: '+91' + phone,
+                        role: 'customer',
+                    }, { onConflict: 'id' });
+                }
+
+                showToast('Verified! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'account.html';
+                }, 1000);
+            } catch (err) {
+                showToast(err.message || 'Invalid OTP');
+                inputs.forEach(i => { i.value = ''; });
+                inputs[0].focus();
+            } finally {
+                setButtonLoading('verifyOtpBtn', false);
+            }
+        }
+
+        function startResendTimer() {
+            let seconds = 30;
+            const btn = document.getElementById('resendBtn');
+            const timer = document.getElementById('resendTimer');
+            btn.disabled = true;
+
+            otpResendTimer = setInterval(() => {
+                seconds--;
+                timer.textContent = `(${seconds}s)`;
+                if (seconds <= 0) {
+                    clearInterval(otpResendTimer);
+                    btn.disabled = false;
+                    timer.textContent = '';
+                }
+            }, 1000);
+        }
+
+        function resendOTP() {
+            const phone = document.getElementById('otpPhone').value;
+            if (phone) {
+                document.getElementById('otpStep2').classList.add('hidden');
+                document.getElementById('otpStep1').classList.remove('hidden');
+                handleSendOTP(new Event('submit'));
+            }
+        }
+
+        function backToOtpStep1() {
+            document.getElementById('otpStep2').classList.add('hidden');
+            document.getElementById('otpStep1').classList.remove('hidden');
+            if (otpResendTimer) clearInterval(otpResendTimer);
+        }
+
+        // OTP Input Handlers
+        function otpInputHandler(input) {
+            if (input.value.length === 1) {
+                const next = input.nextElementSibling;
+                if (next && next.classList.contains('otp-input')) {
+                    next.focus();
+                }
+            }
+        }
+
+        function otpKeyHandler(e, input) {
+            if (e.key === 'Backspace' && !input.value) {
+                const prev = input.previousElementSibling;
+                if (prev && prev.classList.contains('otp-input')) {
+                    prev.focus();
+                    prev.value = '';
+                }
+            }
+        }
+
+        // ============================================
+        // FORGOT PASSWORD
+        // ============================================
+        async function handleForgotPassword() {
+            const email = document.getElementById('loginEmail').value;
+            if (!email) {
+                showToast('Enter your email first, then click "Forgot password?"');
+                return;
+            }
+
+            try {
+                if (!supabase) throw new Error('Connection not ready. Please refresh.');
+
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/login.html',
+                });
+
+                if (error) throw error;
+                showToast('Password reset email sent! Check your inbox.', 'success');
+            } catch (err) {
+                showToast(err.message || 'Failed to send reset email');
+            }
+        }
+
+        // ============================================
+        // CHECK IF ALREADY LOGGED IN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            const checkInterval = setInterval(async () => {
+                if (supabase) {
+                    clearInterval(checkInterval);
+                    const user = await getUser();
+                    if (user) {
+                        window.location.href = 'account.html';
+                    }
+                }
+            }, 200);
+            setTimeout(() => clearInterval(checkInterval), 5000);
+        });
+    </script>
+
+</body>
+
+</html>

@@ -230,5 +230,9 @@ document.addEventListener('DOMContentLoaded', () => {
     renderStakedNfts();
 
     console.log('🚀 StakeVault initialized with Web3Modal!');
-    console.log('📝 Get your Project ID at: https://cloud.walletconnect.com');
 });
+
+// Global function to open wallet modal
+window.openWeb3Modal = function () {
+    modal.open();
+};

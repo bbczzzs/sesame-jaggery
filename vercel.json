@@ -10,6 +10,14 @@
       "use": "@vercel/static"
     },
     {
+      "src": "js/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "admin/**",
+      "use": "@vercel/static"
+    },
+    {
       "src": "nft-staking/**",
       "use": "@vercel/static"
     }
@@ -38,6 +46,22 @@
     {
       "src": "/refund",
       "dest": "/refund.html"
+    },
+    {
+      "src": "/login",
+      "dest": "/login.html"
+    },
+    {
+      "src": "/account",
+      "dest": "/account.html"
+    },
+    {
+      "src": "/admin",
+      "dest": "/admin/index.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/admin/$1"
     },
     {
       "src": "/staking",

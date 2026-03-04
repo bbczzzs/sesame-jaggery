@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account — Sesame & Jaggery</title>
+    <meta name="description"
+        content="Manage your Sesame & Jaggery account, view order history, and update your profile.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FDFBF7',
+                        warmWhite: '#F9F7F3',
+                        sand: '#E5DFD5',
+                        stone: '#8C857A',
+                        clay: '#A6927F',
+                        olive: '#6B7362',
+                        charcoal: '#2C2C2C',
+                        softGray: '#F4F2ED',
+                        accent: '#C4A77D',
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans: ['Inter', 'Helvetica Neue', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #FDFBF7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+
+        ::selection {
+            background-color: #C4A77D;
+            color: #fff;
+        }
+
+        /* Sidebar active */
+        .sidebar-link {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-link.active {
+            background: linear-gradient(90deg, rgba(107, 115, 98, 0.08), transparent);
+            border-left-color: #6B7362;
+            color: #2C2C2C;
+        }
+
+        .sidebar-link:hover:not(.active) {
+            background: rgba(244, 242, 237, 0.6);
+        }
+
+        /* Content panels */
+        .content-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-confirmed {
+            background: #DBEAFE;
+            color: #1D4ED8;
+        }
+
+        .status-shipped {
+            background: #E0E7FF;
+            color: #4338CA;
+        }
+
+        .status-delivered {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-cancelled {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        /* Order card */
+        .order-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(229, 223, 213, 0.5);
+        }
+
+        .order-card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border-color: rgba(196, 167, 125, 0.3);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.error {
+            background: #FEF2F2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+
+        .toast.success {
+            background: #F0FDF4;
+            color: #16A34A;
+            border: 1px solid #BBF7D0;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #F4F2ED 25%, #E5DFD5 50%, #F4F2ED 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s ease-in-out infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Mobile sidebar */
+        @media (max-width: 768px) {
+            .mobile-tabs {
+                display: flex;
+                overflow-x: auto;
+                gap: 4px;
+                padding: 4px;
+                background: rgba(244, 242, 237, 0.6);
+                border-radius: 12px;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .mobile-tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .mobile-tab {
+                flex-shrink: 0;
+                padding: 8px 16px;
+                border-radius: 8px;
+                font-size: 12px;
+                white-space: nowrap;
+                transition: all 0.2s ease;
+            }
+
+            .mobile-tab.active {
+                background: white;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+                color: #2C2C2C;
+            }
+        }
+    </style>
+</head>
+
+<body class="font-sans text-charcoal antialiased min-h-screen">
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-cream/95 backdrop-blur-sm shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+            <div class="flex items-center justify-between h-14 md:h-20">
+                <a href="index.html" class="font-serif text-2xl tracking-wide text-charcoal">
+                    Sesame & Jaggery
+                </a>
+                <div class="flex items-center gap-4 md:gap-6">
+                    <a href="index.html"
+                        class="text-sm font-light tracking-wide text-stone hover:text-charcoal transition-colors">Shop</a>
+                    <button onclick="handleLogout()"
+                        class="text-sm font-light tracking-wide text-stone hover:text-red-500 transition-colors">Sign
+                        Out</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-20 md:pt-28 pb-16 px-4">
+        <div class="max-w-6xl mx-auto">
+
+            <!-- Header -->
+            <div class="mb-8">
+                <p class="text-[10px] md:text-xs tracking-widest uppercase text-stone mb-2">Account</p>
+                <h1 class="font-serif text-3xl md:text-4xl font-light text-charcoal" id="welcomeTitle">Welcome back</h1>
+            </div>
+
+            <!-- Mobile Tabs -->
+            <div class="md:hidden mb-6">
+                <div class="mobile-tabs">
+                    <button onclick="switchSection('orders')" class="mobile-tab active" data-tab="orders">📦
+                        Orders</button>
+                    <button onclick="switchSection('profile')" class="mobile-tab" data-tab="profile">👤 Profile</button>
+                    <button onclick="switchSection('addresses')" class="mobile-tab" data-tab="addresses">📍
+                        Addresses</button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-[220px_1fr] gap-6 md:gap-10">
+
+                <!-- Sidebar (Desktop) -->
+                <aside class="hidden md:block">
+                    <div class="sticky top-28 space-y-1">
+                        <button onclick="switchSection('orders')"
+                            class="sidebar-link active w-full text-left px-4 py-3 rounded-r-lg text-sm text-stone"
+                            data-section="orders">
+                            <span class="flex items-center gap-3">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                                My Orders
+                            </span>
+                        </button>
+                        <button onclick="switchSection('profile')"
+                            class="sidebar-link w-full text-left px-4 py-3 rounded-r-lg text-sm text-stone"
+                            data-section="profile">
+                            <span class="flex items-center gap-3">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Profile
+                            </span>
+                        </button>
+                        <button onclick="switchSection('addresses')"
+                            class="sidebar-link w-full text-left px-4 py-3 rounded-r-lg text-sm text-stone"
+                            data-section="addresses">
+                            <span class="flex items-center gap-3">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Saved Addresses
+                            </span>
+                        </button>
+                        <div class="border-t border-sand/30 my-3"></div>
+                        <button onclick="handleLogout()"
+                            class="sidebar-link w-full text-left px-4 py-3 rounded-r-lg text-sm text-red-400 hover:text-red-500 hover:bg-red-50/50">
+                            <span class="flex items-center gap-3">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Sign Out
+                            </span>
+                        </button>
+                    </div>
+                </aside>
+
+                <!-- Content Area -->
+                <div>
+
+                    <!-- ====== ORDERS SECTION ====== -->
+                    <div id="sectionOrders" class="content-panel active">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="font-serif text-xl md:text-2xl text-charcoal">My Orders</h2>
+                            <a href="index.html#food"
+                                class="text-xs text-olive hover:text-charcoal transition-colors flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4" />
+                                </svg>
+                                New Order
+                            </a>
+                        </div>
+
+                        <!-- Loading skeleton -->
+                        <div id="ordersLoading" class="space-y-4">
+                            <div class="p-6 rounded-lg bg-white/60">
+                                <div class="skeleton h-5 w-32 mb-3"></div>
+                                <div class="skeleton h-4 w-64 mb-2"></div>
+                                <div class="skeleton h-3 w-48"></div>
+                            </div>
+                            <div class="p-6 rounded-lg bg-white/60">
+                                <div class="skeleton h-5 w-32 mb-3"></div>
+                                <div class="skeleton h-4 w-64 mb-2"></div>
+                                <div class="skeleton h-3 w-48"></div>
+                            </div>
+                        </div>
+
+                        <!-- Empty state -->
+                        <div id="ordersEmpty" class="hidden text-center py-16">
+                            <div
+                                class="w-16 h-16 mx-auto mb-4 rounded-full bg-softGray flex items-center justify-center">
+                                <svg class="w-7 h-7 text-stone/50" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            </div>
+                            <p class="text-stone font-light mb-2">No orders yet</p>
+                            <p class="text-xs text-stone/60 mb-6">When you place an order, it will appear here</p>
+                            <a href="index.html#food"
+                                class="inline-flex items-center gap-2 px-6 py-3 bg-charcoal text-cream text-sm rounded-lg hover:bg-charcoal/90 transition-colors">
+                                Start Shopping
+                            </a>
+                        </div>
+
+                        <!-- Orders list -->
+                        <div id="ordersList" class="hidden space-y-4"></div>
+                    </div>
+
+                    <!-- ====== PROFILE SECTION ====== -->
+                    <div id="sectionProfile" class="content-panel">
+                        <h2 class="font-serif text-xl md:text-2xl text-charcoal mb-6">Profile</h2>
+
+                        <div class="bg-white/60 rounded-lg border border-sand/40 p-6 md:p-8">
+                            <!-- Avatar -->
+                            <div class="flex items-center gap-4 mb-8">
+                                <div id="profileAvatar"
+                                    class="w-16 h-16 rounded-full bg-gradient-to-br from-olive to-accent flex items-center justify-center text-white text-xl font-serif">
+                                    ?
+                                </div>
+                                <div>
+                                    <p id="profileDisplayName" class="font-medium text-charcoal">Loading...</p>
+                                    <p id="profileDisplayEmail" class="text-sm text-stone">Loading...</p>
+                                </div>
+                            </div>
+
+                            <form onsubmit="updateProfile(event)" class="space-y-4">
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs tracking-wider uppercase text-stone mb-2">Full
+                                            Name</label>
+                                        <input type="text" id="profileName"
+                                            class="w-full px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none focus:border-olive transition-colors">
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-xs tracking-wider uppercase text-stone mb-2">Email</label>
+                                        <input type="email" id="profileEmail" disabled
+                                            class="w-full px-4 py-3 bg-softGray border border-sand/50 rounded-lg text-stone text-sm cursor-not-allowed">
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-xs tracking-wider uppercase text-stone mb-2">Phone</label>
+                                        <input type="tel" id="profilePhone"
+                                            class="w-full px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none focus:border-olive transition-colors">
+                                    </div>
+                                </div>
+                                <div class="pt-2">
+                                    <button type="submit"
+                                        class="px-6 py-3 bg-charcoal text-cream text-sm tracking-wider rounded-lg hover:bg-charcoal/90 transition-colors">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Account info -->
+                        <div class="mt-6 bg-white/60 rounded-lg border border-sand/40 p-6">
+                            <h3 class="text-sm font-medium text-charcoal mb-4">Account Information</h3>
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="text-xs text-stone/60 mb-1">Member Since</p>
+                                    <p id="memberSince" class="text-charcoal">—</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-stone/60 mb-1">Total Orders</p>
+                                    <p id="totalOrdersCount" class="text-charcoal">—</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ====== ADDRESSES SECTION ====== -->
+                    <div id="sectionAddresses" class="content-panel">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="font-serif text-xl md:text-2xl text-charcoal">Saved Addresses</h2>
+                            <button onclick="showAddAddressForm()"
+                                class="text-xs text-olive hover:text-charcoal transition-colors flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4" />
+                                </svg>
+                                Add Address
+                            </button>
+                        </div>
+
+                        <!-- Add address form (hidden by default) -->
+                        <div id="addAddressForm" class="hidden mb-6 bg-white/60 rounded-lg border border-sand/40 p-6">
+                            <h3 class="text-sm font-medium text-charcoal mb-4">New Address</h3>
+                            <form onsubmit="saveAddress(event)" class="space-y-3">
+                                <input type="text" id="addressLabel" required placeholder="Label (e.g. Home, Office)"
+                                    class="w-full px-4 py-2.5 bg-cream border border-sand/50 rounded-lg text-sm focus:outline-none focus:border-olive">
+                                <textarea id="addressFull" required rows="3" placeholder="Full address with landmark"
+                                    class="w-full px-4 py-2.5 bg-cream border border-sand/50 rounded-lg text-sm focus:outline-none focus:border-olive resize-none"></textarea>
+                                <input type="text" id="addressPincode" placeholder="Pincode"
+                                    class="w-full px-4 py-2.5 bg-cream border border-sand/50 rounded-lg text-sm focus:outline-none focus:border-olive">
+                                <div class="flex gap-3 pt-1">
+                                    <button type="submit"
+                                        class="px-5 py-2.5 bg-charcoal text-cream text-xs rounded-lg hover:bg-charcoal/90">Save</button>
+                                    <button type="button" onclick="hideAddAddressForm()"
+                                        class="px-5 py-2.5 text-stone text-xs hover:text-charcoal">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="addressesList" class="space-y-3">
+                            <!-- Addresses loaded here -->
+                        </div>
+
+                        <div id="addressesEmpty" class="hidden text-center py-12">
+                            <p class="text-stone font-light mb-1">No saved addresses</p>
+                            <p class="text-xs text-stone/60">Add an address to speed up checkout</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Order Detail Modal -->
+    <div id="orderDetailModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-charcoal/50 backdrop-blur-sm" onclick="closeOrderDetail()"></div>
+        <div class="relative bg-cream rounded-lg p-6 md:p-8 max-w-lg w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+            <button onclick="closeOrderDetail()" class="absolute top-4 right-4 text-stone hover:text-charcoal">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div id="orderDetailContent">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase Config -->
+    <script src="js/supabase-config.js"></script>
+
+    <script>
+        // ============================================
+        // SECTION SWITCHING
+        // ============================================
+        function switchSection(section) {
+            // Desktop sidebar
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            document.querySelector(`.sidebar-link[data-section="${section}"]`)?.classList.add('active');
+
+            // Mobile tabs
+            document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.mobile-tab[data-tab="${section}"]`)?.classList.add('active');
+
+            // Content panels
+            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('section' + section.charAt(0).toUpperCase() + section.slice(1)).classList.add('active');
+        }
+
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        // ============================================
+        // LOAD USER DATA
+        // ============================================
+        async function loadUserData() {
+            const profile = await getUserProfile();
+            if (!profile) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Update welcome
+            const name = profile.full_name || profile.email?.split('@')[0] || 'there';
+            document.getElementById('welcomeTitle').textContent = `Welcome, ${name}`;
+
+            // Update profile form
+            document.getElementById('profileName').value = profile.full_name || '';
+            document.getElementById('profileEmail').value = profile.email || '';
+            document.getElementById('profilePhone').value = profile.phone || '';
+            document.getElementById('profileDisplayName').textContent = profile.full_name || 'User';
+            document.getElementById('profileDisplayEmail').textContent = profile.email || '';
+            document.getElementById('profileAvatar').textContent = (profile.full_name || 'U')[0].toUpperCase();
+
+            // Member since
+            if (profile.created_at) {
+                const d = new Date(profile.created_at);
+                document.getElementById('memberSince').textContent = d.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+            }
+
+            // Load orders
+            await loadOrders();
+
+            // Load addresses
+            await loadAddresses();
+        }
+
+        // ============================================
+        // ORDERS
+        // ============================================
+        async function loadOrders() {
+            const orders = await getUserOrders();
+
+            document.getElementById('ordersLoading').classList.add('hidden');
+            document.getElementById('totalOrdersCount').textContent = orders.length;
+
+            if (orders.length === 0) {
+                document.getElementById('ordersEmpty').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('ordersList').classList.remove('hidden');
+            const container = document.getElementById('ordersList');
+
+            container.innerHTML = orders.map(order => {
+                const date = new Date(order.created_at);
+                const dateStr = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                const items = order.items || [];
+                const itemsSummary = items.map(i => i.name).join(', ');
+                const itemCount = items.reduce((sum, i) => sum + (i.qty || 1), 0);
+
+                return `
+                    <div class="order-card bg-white/60 rounded-lg p-5 md:p-6 cursor-pointer" onclick='viewOrderDetail(${JSON.stringify(order).replace(/'/g, "\\'")})'>\n                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <div class="flex items-center gap-3 mb-1">
+                                    <span class="font-medium text-charcoal text-sm">#${order.order_id}</span>
+                                    <span class="status-badge status-${order.status}">${order.status}</span>
+                                </div>
+                                <p class="text-xs text-stone/60">${dateStr}</p>
+                            </div>
+                            <span class="font-serif text-lg text-charcoal">₹${order.total}</span>
+                        </div>
+                        <p class="text-xs text-stone line-clamp-1">${itemsSummary}</p>
+                        <p class="text-[10px] text-stone/50 mt-1">${itemCount} item${itemCount > 1 ? 's' : ''} · Cash on Delivery</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function viewOrderDetail(order) {
+            const date = new Date(order.created_at);
+            const dateStr = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const items = order.items || [];
+
+            const itemsHTML = items.map(item => `
+                <div class="flex items-center gap-3 py-3 border-b border-sand/20 last:border-0">
+                    ${item.img ? `<img src="${item.img}" class="w-12 h-12 rounded-lg object-cover bg-softGray" onerror="this.style.display='none'">` : ''}
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm text-charcoal truncate">${item.name}</p>
+                        <p class="text-xs text-stone">x${item.qty}</p>
+                    </div>
+                    <span class="text-sm text-charcoal">₹${item.price * item.qty}</span>
+                </div>
+            `).join('');
+
+            const statusTimeline = getStatusTimeline(order.status);
+
+            document.getElementById('orderDetailContent').innerHTML = `
+                <div class="mb-6">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h3 class="font-serif text-2xl text-charcoal">Order #${order.order_id}</h3>
+                    </div>
+                    <p class="text-xs text-stone">${dateStr}</p>
+                </div>
+
+                <!-- Status Timeline -->
+                <div class="mb-6 py-4 px-5 bg-softGray rounded-lg">
+                    <p class="text-xs tracking-wider uppercase text-stone mb-3">Order Status</p>
+                    ${statusTimeline}
+                </div>
+
+                <!-- Items -->
+                <div class="mb-6">
+                    <p class="text-xs tracking-wider uppercase text-stone mb-3">Items</p>
+                    ${itemsHTML}
+                </div>
+
+                <!-- Totals -->
+                <div class="space-y-2 py-4 border-t border-sand/30">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-stone">Subtotal</span>
+                        <span>₹${order.subtotal}</span>
+                    </div>
+                    ${order.discount > 0 ? `<div class="flex justify-between text-sm"><span class="text-olive">Discount</span><span class="text-olive">-₹${order.discount}</span></div>` : ''}
+                    <div class="flex justify-between text-sm">
+                        <span class="text-stone">Delivery</span>
+                        <span>${order.delivery_charge === 0 ? '<span class="text-olive">FREE</span>' : '₹' + order.delivery_charge}</span>
+                    </div>
+                    <div class="flex justify-between text-base font-medium pt-2 border-t border-sand/20">
+                        <span>Total</span>
+                        <span class="font-serif">₹${order.total}</span>
+                    </div>
+                </div>
+
+                <!-- Delivery Info -->
+                <div class="pt-4 border-t border-sand/30">
+                    <p class="text-xs tracking-wider uppercase text-stone mb-2">Delivery Details</p>
+                    <p class="text-sm text-charcoal">${order.customer_name}</p>
+                    <p class="text-sm text-stone">${order.customer_phone}</p>
+                    <p class="text-sm text-stone mt-1">${order.delivery_address}</p>
+                    ${order.special_notes ? `<p class="text-xs text-stone/60 mt-2 italic">"${order.special_notes}"</p>` : ''}
+                    <p class="text-xs text-stone/50 mt-2">Payment: Cash on Delivery</p>
+                </div>
+            `;
+
+            document.getElementById('orderDetailModal').classList.remove('hidden');
+            document.getElementById('orderDetailModal').classList.add('flex');
+        }
+
+        function getStatusTimeline(currentStatus) {
+            const steps = ['pending', 'confirmed', 'shipped', 'delivered'];
+            const labels = { pending: 'Order Placed', confirmed: 'Confirmed', shipped: 'Shipped', delivered: 'Delivered' };
+            const icons = { pending: '📋', confirmed: '✅', shipped: '🚚', delivered: '🎉' };
+            const currentIndex = steps.indexOf(currentStatus);
+
+            if (currentStatus === 'cancelled') {
+                return `<div class="flex items-center gap-2"><span class="text-sm">❌</span><span class="text-sm text-red-500 font-medium">Order Cancelled</span></div>`;
+            }
+
+            return `<div class="flex items-center justify-between">${steps.map((step, i) => {
+                const active = i <= currentIndex;
+                return `
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <span class="text-lg ${active ? '' : 'grayscale opacity-40'}">${icons[step]}</span>
+                        <span class="text-[10px] ${active ? 'text-charcoal font-medium' : 'text-stone/40'}">${labels[step]}</span>
+                    </div>
+                    ${i < steps.length - 1 ? `<div class="flex-1 h-px max-w-[30px] ${i < currentIndex ? 'bg-olive' : 'bg-sand'}"></div>` : ''}
+                `;
+            }).join('')}</div>`;
+        }
+
+        function closeOrderDetail() {
+            document.getElementById('orderDetailModal').classList.add('hidden');
+            document.getElementById('orderDetailModal').classList.remove('flex');
+        }
+
+        // ============================================
+        // PROFILE UPDATE
+        // ============================================
+        async function updateProfile(e) {
+            e.preventDefault();
+            const user = await getUser();
+            if (!user) return;
+
+            const name = document.getElementById('profileName').value;
+            const phone = document.getElementById('profilePhone').value;
+
+            try {
+                const { error } = await supabase.from('profiles').upsert({
+                    id: user.id,
+                    full_name: name,
+                    phone: phone,
+                }, { onConflict: 'id' });
+
+                if (error) throw error;
+
+                showToast('Profile updated!', 'success');
+                document.getElementById('profileDisplayName').textContent = name;
+                document.getElementById('profileAvatar').textContent = name[0]?.toUpperCase() || 'U';
+                document.getElementById('welcomeTitle').textContent = `Welcome, ${name}`;
+            } catch (err) {
+                showToast('Failed to update profile');
+            }
+        }
+
+        // ============================================
+        // ADDRESSES
+        // ============================================
+        async function loadAddresses() {
+            const user = await getUser();
+            if (!user) return;
+
+            const { data, error } = await supabase
+                .from('addresses')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                document.getElementById('addressesEmpty').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('addressesEmpty').classList.add('hidden');
+            document.getElementById('addressesList').innerHTML = data.map(addr => `
+                <div class="bg-white/60 rounded-lg border border-sand/40 p-4 flex items-start justify-between">
+                    <div>
+                        <span class="text-xs tracking-wider uppercase text-olive mb-1 block">${addr.label || 'Address'}</span>
+                        <p class="text-sm text-charcoal">${addr.address}</p>
+                        ${addr.pincode ? `<p class="text-xs text-stone mt-1">${addr.pincode}</p>` : ''}
+                    </div>
+                    <button onclick="deleteAddress('${addr.id}')" class="text-stone/40 hover:text-red-400 transition-colors p-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function showAddAddressForm() { document.getElementById('addAddressForm').classList.remove('hidden'); }
+        function hideAddAddressForm() { document.getElementById('addAddressForm').classList.add('hidden'); }
+
+        async function saveAddress(e) {
+            e.preventDefault();
+            const user = await getUser();
+            if (!user) return;
+
+            const { error } = await supabase.from('addresses').insert({
+                user_id: user.id,
+                label: document.getElementById('addressLabel').value,
+                address: document.getElementById('addressFull').value,
+                pincode: document.getElementById('addressPincode').value,
+            });
+
+            if (error) {
+                showToast('Failed to save address');
+                return;
+            }
+
+            showToast('Address saved!', 'success');
+            hideAddAddressForm();
+            await loadAddresses();
+        }
+
+        async function deleteAddress(id) {
+            const { error } = await supabase.from('addresses').delete().eq('id', id);
+            if (!error) {
+                showToast('Address removed', 'success');
+                await loadAddresses();
+            }
+        }
+
+        // ============================================
+        // LOGOUT
+        // ============================================
+        async function handleLogout() {
+            if (supabase) {
+                await supabase.auth.signOut();
+            }
+            window.location.href = 'login.html';
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkInterval = setInterval(async () => {
+                if (supabase) {
+                    clearInterval(checkInterval);
+                    const user = await getUser();
+                    if (!user) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    loadUserData();
+                }
+            }, 200);
+            setTimeout(() => clearInterval(checkInterval), 5000);
+        });
+    </script>
+
+</body>
+
+</html>
