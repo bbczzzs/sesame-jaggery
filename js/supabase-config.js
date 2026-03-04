@@ -52,6 +52,10 @@ Object.defineProperty(window, 'supabaseClient', { get: function () { return sb; 
 async function getUser() {
     if (!sb) return null;
     try {
+        // First check session (local, fast)
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) return null;
+        // Then get full user
         const { data: { user } } = await sb.auth.getUser();
         return user;
     } catch (e) {

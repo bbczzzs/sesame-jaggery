@@ -552,10 +552,7 @@
         // ============================================
         async function loadUserData() {
             const profile = await getUserProfile();
-            if (!profile) {
-                window.location.href = 'login.html';
-                return;
-            }
+            if (!profile) return;
 
             // Update welcome
             const name = profile.full_name || profile.email?.split('@')[0] || 'there';
@@ -832,18 +829,29 @@
         // INIT
         // ============================================
         document.addEventListener('DOMContentLoaded', () => {
+            // Wait for sb to be ready, then check auth
+            let attempts = 0;
             const checkInterval = setInterval(async () => {
+                attempts++;
                 if (sb) {
                     clearInterval(checkInterval);
-                    const user = await getUser();
-                    if (!user) {
+                    try {
+                        const { data: { session } } = await sb.auth.getSession();
+                        if (!session) {
+                            window.location.href = '/login';
+                            return;
+                        }
+                        loadUserData();
+                    } catch (e) {
+                        console.error('Auth check error:', e);
                         window.location.href = '/login';
-                        return;
                     }
-                    loadUserData();
+                } else if (attempts > 25) {
+                    // sb never loaded after 5s
+                    clearInterval(checkInterval);
+                    window.location.href = '/login';
                 }
             }, 200);
-            setTimeout(() => clearInterval(checkInterval), 5000);
         });
     </script>
 
