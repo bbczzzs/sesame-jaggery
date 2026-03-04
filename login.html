@@ -63,8 +63,8 @@
             height: 100%;
             opacity: 0.03;
             pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
             z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
         }
 
         ::selection {
@@ -72,7 +72,6 @@
             color: #fff;
         }
 
-        /* Tab styles */
         .auth-tab {
             position: relative;
             padding-bottom: 8px;
@@ -98,7 +97,6 @@
             width: 100%;
         }
 
-        /* Input focus animation */
         .auth-input {
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -108,7 +106,6 @@
             box-shadow: 0 0 0 3px rgba(107, 115, 98, 0.1);
         }
 
-        /* Loader */
         .btn-loader {
             display: inline-block;
             width: 16px;
@@ -125,7 +122,6 @@
             }
         }
 
-        /* Slide animations */
         .auth-panel {
             display: none;
             animation: fadeSlideIn 0.4s ease forwards;
@@ -147,7 +143,6 @@
             }
         }
 
-        /* Divider */
         .auth-divider {
             display: flex;
             align-items: center;
@@ -162,52 +157,6 @@
             background: linear-gradient(to right, transparent, #E5DFD5, transparent);
         }
 
-        /* OTP Input */
-        .otp-input {
-            width: 48px;
-            height: 56px;
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 500;
-            border: 1.5px solid #E5DFD5;
-            border-radius: 8px;
-            background: #FDFBF7;
-            transition: all 0.2s ease;
-        }
-
-        .otp-input:focus {
-            outline: none;
-            border-color: #6B7362;
-            box-shadow: 0 0 0 3px rgba(107, 115, 98, 0.1);
-        }
-
-        /* Success checkmark */
-        .success-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6B7362, #8C857A);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: popIn 0.5s ease forwards;
-        }
-
-        @keyframes popIn {
-            0% {
-                transform: scale(0);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        /* Toast notification */
         .toast {
             position: fixed;
             top: 80px;
@@ -250,11 +199,11 @@
     <nav class="fixed top-0 left-0 right-0 z-50 bg-cream/95 backdrop-blur-sm shadow-sm">
         <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
             <div class="flex items-center justify-between h-14 md:h-20">
-                <a href="index.html" class="font-serif text-2xl tracking-wide text-charcoal">
+                <a href="/" class="font-serif text-2xl tracking-wide text-charcoal">
                     Sesame & Jaggery
                 </a>
                 <div class="flex items-center gap-6">
-                    <a href="index.html"
+                    <a href="/"
                         class="text-sm font-light tracking-wide text-stone hover:text-charcoal transition-colors">
                         ← Back to Shop
                     </a>
@@ -298,14 +247,12 @@
                     <span class="text-xs text-stone/60">or</span>
                 </div>
 
-                <!-- Tabs -->
+                <!-- Tabs (Sign In / Register only) -->
                 <div class="flex gap-6 mb-6 border-b border-sand/30 pb-0">
                     <button onclick="switchTab('login')" id="tabLogin"
                         class="auth-tab text-sm tracking-wide text-stone active">Sign In</button>
                     <button onclick="switchTab('register')" id="tabRegister"
                         class="auth-tab text-sm tracking-wide text-stone">Register</button>
-                    <button onclick="switchTab('otp')" id="tabOtp" class="auth-tab text-sm tracking-wide text-stone">OTP
-                        Login</button>
                 </div>
 
                 <!-- LOGIN PANEL -->
@@ -380,80 +327,13 @@
                         </button>
                     </form>
                 </div>
-
-                <!-- OTP PANEL -->
-                <div id="panelOtp" class="auth-panel">
-                    <!-- Step 1: Enter phone -->
-                    <div id="otpStep1">
-                        <form onsubmit="handleSendOTP(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs tracking-wider uppercase text-stone mb-2">Phone
-                                    Number</label>
-                                <div class="flex gap-2">
-                                    <span
-                                        class="flex items-center px-3 bg-softGray border border-sand/50 rounded-lg text-sm text-stone">+91</span>
-                                    <input type="tel" id="otpPhone" required pattern="[0-9]{10}" maxlength="10"
-                                        class="auth-input flex-1 px-4 py-3 bg-cream border border-sand/50 rounded-lg text-charcoal text-sm focus:outline-none"
-                                        placeholder="XXXXX XXXXX">
-                                </div>
-                                <p class="text-[10px] text-stone/60 mt-2">We'll send a 6-digit OTP to your phone via SMS
-                                </p>
-                            </div>
-                            <button type="submit" id="sendOtpBtn"
-                                class="w-full py-3.5 bg-charcoal text-cream text-sm tracking-wider rounded-lg hover:bg-charcoal/90 transition-all duration-300 flex items-center justify-center gap-2">
-                                Send OTP
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Step 2: Verify OTP -->
-                    <div id="otpStep2" class="hidden">
-                        <div class="text-center mb-6">
-                            <p class="text-sm text-stone">Enter the 6-digit code sent to</p>
-                            <p class="text-sm font-medium text-charcoal mt-1" id="otpPhoneDisplay">+91 XXXXX XXXXX</p>
-                        </div>
-                        <form onsubmit="handleVerifyOTP(event)" class="space-y-6">
-                            <div class="flex justify-center gap-2" id="otpInputs">
-                                <input type="text" maxlength="1" class="otp-input" data-index="0"
-                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
-                                <input type="text" maxlength="1" class="otp-input" data-index="1"
-                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
-                                <input type="text" maxlength="1" class="otp-input" data-index="2"
-                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
-                                <input type="text" maxlength="1" class="otp-input" data-index="3"
-                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
-                                <input type="text" maxlength="1" class="otp-input" data-index="4"
-                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
-                                <input type="text" maxlength="1" class="otp-input" data-index="5"
-                                    oninput="otpInputHandler(this)" onkeydown="otpKeyHandler(event, this)">
-                            </div>
-                            <button type="submit" id="verifyOtpBtn"
-                                class="w-full py-3.5 bg-charcoal text-cream text-sm tracking-wider rounded-lg hover:bg-charcoal/90 transition-all duration-300 flex items-center justify-center gap-2">
-                                Verify & Sign In
-                            </button>
-                        </form>
-                        <div class="text-center mt-4">
-                            <button onclick="resendOTP()" id="resendBtn"
-                                class="text-xs text-olive hover:text-charcoal transition-colors disabled:opacity-40"
-                                disabled>
-                                Resend OTP <span id="resendTimer">(30s)</span>
-                            </button>
-                        </div>
-                        <div class="text-center mt-2">
-                            <button onclick="backToOtpStep1()"
-                                class="text-xs text-stone hover:text-charcoal transition-colors">
-                                ← Change number
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Footer text -->
             <p class="text-center text-[10px] text-stone/50 mt-6">
                 By continuing, you agree to our
-                <a href="terms.html" class="underline hover:text-stone">Terms</a> and
-                <a href="privacy.html" class="underline hover:text-stone">Privacy Policy</a>.
+                <a href="/terms" class="underline hover:text-stone">Terms</a> and
+                <a href="/privacy" class="underline hover:text-stone">Privacy Policy</a>.
             </p>
         </div>
     </main>
@@ -466,11 +346,9 @@
         // TAB SWITCHING
         // ============================================
         function switchTab(tab) {
-            // Update tabs
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
 
-            // Update panels
             document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
             document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
         }
@@ -482,9 +360,7 @@
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.className = `toast ${type} show`;
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 4000);
+            setTimeout(() => toast.classList.remove('show'), 4000);
         }
 
         function setButtonLoading(btnId, loading) {
@@ -510,18 +386,16 @@
             setButtonLoading('loginBtn', true);
 
             try {
-                if (!supabase) throw new Error('Connection not ready. Please refresh.');
+                if (!sb) throw new Error('Connection not ready. Please refresh.');
 
-                const { data, error } = await supabase.auth.signInWithPassword({
+                const { data, error } = await sb.auth.signInWithPassword({
                     email, password
                 });
 
                 if (error) throw error;
 
                 showToast('Welcome back! Redirecting...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'account.html';
-                }, 1000);
+                setTimeout(() => { window.location.href = '/account'; }, 1000);
             } catch (err) {
                 showToast(err.message || 'Login failed');
             } finally {
@@ -549,9 +423,9 @@
             setButtonLoading('registerBtn', true);
 
             try {
-                if (!supabase) throw new Error('Connection not ready. Please refresh.');
+                if (!sb) throw new Error('Connection not ready. Please refresh.');
 
-                const { data, error } = await supabase.auth.signUp({
+                const { data, error } = await sb.auth.signUp({
                     email,
                     password,
                     options: {
@@ -564,9 +438,8 @@
 
                 if (error) throw error;
 
-                // Create profile record
                 if (data.user) {
-                    await supabase.from('profiles').upsert({
+                    await sb.from('profiles').upsert({
                         id: data.user.id,
                         full_name: name,
                         email: email,
@@ -589,155 +462,18 @@
         // ============================================
         async function signInWithGoogle() {
             try {
-                if (!supabase) throw new Error('Connection not ready. Please refresh.');
+                if (!sb) throw new Error('Connection not ready. Please refresh.');
 
-                const { data, error } = await supabase.auth.signInWithOAuth({
+                const { data, error } = await sb.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.origin + '/account.html'
+                        redirectTo: window.location.origin + '/account'
                     }
                 });
 
                 if (error) throw error;
             } catch (err) {
                 showToast(err.message || 'Google sign-in failed');
-            }
-        }
-
-        // ============================================
-        // OTP LOGIN
-        // ============================================
-        let otpResendTimer = null;
-
-        async function handleSendOTP(e) {
-            e.preventDefault();
-            const phone = document.getElementById('otpPhone').value;
-
-            setButtonLoading('sendOtpBtn', true);
-
-            try {
-                if (!supabase) throw new Error('Connection not ready. Please refresh.');
-
-                const { data, error } = await supabase.auth.signInWithOtp({
-                    phone: '+91' + phone,
-                });
-
-                if (error) throw error;
-
-                // Show step 2
-                document.getElementById('otpStep1').classList.add('hidden');
-                document.getElementById('otpStep2').classList.remove('hidden');
-                document.getElementById('otpPhoneDisplay').textContent = '+91 ' + phone;
-
-                // Focus first OTP input
-                document.querySelector('.otp-input').focus();
-
-                // Start resend timer
-                startResendTimer();
-
-                showToast('OTP sent successfully!', 'success');
-            } catch (err) {
-                showToast(err.message || 'Failed to send OTP');
-            } finally {
-                setButtonLoading('sendOtpBtn', false);
-            }
-        }
-
-        async function handleVerifyOTP(e) {
-            e.preventDefault();
-            const inputs = document.querySelectorAll('.otp-input');
-            const otp = Array.from(inputs).map(i => i.value).join('');
-
-            if (otp.length !== 6) {
-                showToast('Please enter the complete 6-digit OTP');
-                return;
-            }
-
-            const phone = document.getElementById('otpPhone').value;
-            setButtonLoading('verifyOtpBtn', true);
-
-            try {
-                if (!supabase) throw new Error('Connection not ready. Please refresh.');
-
-                const { data, error } = await supabase.auth.verifyOtp({
-                    phone: '+91' + phone,
-                    token: otp,
-                    type: 'sms',
-                });
-
-                if (error) throw error;
-
-                // Create/update profile
-                if (data.user) {
-                    await supabase.from('profiles').upsert({
-                        id: data.user.id,
-                        phone: '+91' + phone,
-                        role: 'customer',
-                    }, { onConflict: 'id' });
-                }
-
-                showToast('Verified! Redirecting...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'account.html';
-                }, 1000);
-            } catch (err) {
-                showToast(err.message || 'Invalid OTP');
-                inputs.forEach(i => { i.value = ''; });
-                inputs[0].focus();
-            } finally {
-                setButtonLoading('verifyOtpBtn', false);
-            }
-        }
-
-        function startResendTimer() {
-            let seconds = 30;
-            const btn = document.getElementById('resendBtn');
-            const timer = document.getElementById('resendTimer');
-            btn.disabled = true;
-
-            otpResendTimer = setInterval(() => {
-                seconds--;
-                timer.textContent = `(${seconds}s)`;
-                if (seconds <= 0) {
-                    clearInterval(otpResendTimer);
-                    btn.disabled = false;
-                    timer.textContent = '';
-                }
-            }, 1000);
-        }
-
-        function resendOTP() {
-            const phone = document.getElementById('otpPhone').value;
-            if (phone) {
-                document.getElementById('otpStep2').classList.add('hidden');
-                document.getElementById('otpStep1').classList.remove('hidden');
-                handleSendOTP(new Event('submit'));
-            }
-        }
-
-        function backToOtpStep1() {
-            document.getElementById('otpStep2').classList.add('hidden');
-            document.getElementById('otpStep1').classList.remove('hidden');
-            if (otpResendTimer) clearInterval(otpResendTimer);
-        }
-
-        // OTP Input Handlers
-        function otpInputHandler(input) {
-            if (input.value.length === 1) {
-                const next = input.nextElementSibling;
-                if (next && next.classList.contains('otp-input')) {
-                    next.focus();
-                }
-            }
-        }
-
-        function otpKeyHandler(e, input) {
-            if (e.key === 'Backspace' && !input.value) {
-                const prev = input.previousElementSibling;
-                if (prev && prev.classList.contains('otp-input')) {
-                    prev.focus();
-                    prev.value = '';
-                }
             }
         }
 
@@ -752,10 +488,10 @@
             }
 
             try {
-                if (!supabase) throw new Error('Connection not ready. Please refresh.');
+                if (!sb) throw new Error('Connection not ready. Please refresh.');
 
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + '/login.html',
+                const { error } = await sb.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/login',
                 });
 
                 if (error) throw error;
@@ -768,17 +504,17 @@
         // ============================================
         // CHECK IF ALREADY LOGGED IN
         // ============================================
-        document.addEventListener('DOMContentLoaded', async () => {
-            const checkInterval = setInterval(async () => {
-                if (supabase) {
+        document.addEventListener('DOMContentLoaded', function () {
+            var checkInterval = setInterval(async function () {
+                if (sb) {
                     clearInterval(checkInterval);
-                    const user = await getUser();
+                    var user = await getUser();
                     if (user) {
-                        window.location.href = 'account.html';
+                        window.location.href = '/account';
                     }
                 }
             }, 200);
-            setTimeout(() => clearInterval(checkInterval), 5000);
+            setTimeout(function () { clearInterval(checkInterval); }, 5000);
         });
     </script>
 

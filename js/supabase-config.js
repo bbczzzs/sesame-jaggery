@@ -1,58 +1,84 @@
 // ============================================
 // SUPABASE CONFIGURATION
 // ============================================
-// IMPORTANT: Replace these with your actual Supabase project credentials
-// Get them from: https://supabase.com → Your Project → Settings → API
-// ============================================
 
 const SUPABASE_URL = 'https://bzxsitulvkhnjilbgehz.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_FOYTerCWuiEza68qVziDOA_QJjR5yUm';
 
 // EmailJS Configuration (for order emails)
-// Sign up at https://www.emailjs.com (free tier: 200 emails/month)
 const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
 const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
 const EMAILJS_ORDER_TEMPLATE_ID = 'YOUR_EMAILJS_ORDER_TEMPLATE';
 const EMAILJS_SHIPPING_TEMPLATE_ID = 'YOUR_EMAILJS_SHIPPING_TEMPLATE';
 
-// Initialize Supabase Client
-let supabase;
+// Initialize Supabase Client — use "sb" to avoid conflict with window.supabase CDN
+var sb = null;
 
-function initSupabase() {
-    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('✅ Supabase initialized');
-        return true;
+(function initSupabase() {
+    try {
+        var lib = window.supabase;
+        if (lib && lib.createClient) {
+            sb = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('✅ Supabase initialized');
+        } else {
+            // Retry after CDN finishes loading
+            var retries = 0;
+            var timer = setInterval(function () {
+                retries++;
+                lib = window.supabase;
+                if (lib && lib.createClient) {
+                    sb = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    console.log('✅ Supabase initialized (retry ' + retries + ')');
+                    clearInterval(timer);
+                } else if (retries > 30) {
+                    console.warn('⚠️ Supabase JS failed to load after 3s');
+                    clearInterval(timer);
+                }
+            }, 100);
+        }
+    } catch (e) {
+        console.error('Supabase init error:', e);
     }
-    console.warn('⚠️ Supabase JS not loaded yet');
-    return false;
-}
+})();
+
+// Alias for backward compat — pages reference "supabase" 
+// We define it as a getter so it always returns the current sb client
+Object.defineProperty(window, 'supabaseClient', { get: function () { return sb; } });
 
 // ============================================
 // AUTH HELPER FUNCTIONS
 // ============================================
 
 async function getUser() {
-    if (!supabase) return null;
-    const { data: { user } } = await supabase.auth.getUser();
-    return user;
+    if (!sb) return null;
+    try {
+        const { data: { user } } = await sb.auth.getUser();
+        return user;
+    } catch (e) {
+        console.warn('getUser error:', e);
+        return null;
+    }
 }
 
 async function getUserProfile() {
     const user = await getUser();
     if (!user) return null;
 
-    const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+    try {
+        const { data, error } = await sb
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
 
-    if (error) {
-        console.error('Error fetching profile:', error);
+        if (error) {
+            console.error('Error fetching profile:', error);
+            return null;
+        }
+        return { ...user, ...data };
+    } catch (e) {
         return null;
     }
-    return { ...user, ...data };
 }
 
 async function isAdmin() {
@@ -70,7 +96,7 @@ async function createOrder(orderData) {
 
     const orderId = 'SJ' + Date.now().toString().slice(-8);
 
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await sb
         .from('orders')
         .insert({
             order_id: orderId,
@@ -108,7 +134,7 @@ async function getUserOrders() {
     const user = await getUser();
     if (!user) return [];
 
-    const { data, error } = await supabase
+    const { data, error } = await sb
         .from('orders')
         .select('*')
         .eq('user_id', user.id)
@@ -118,11 +144,11 @@ async function getUserOrders() {
         console.error('Error fetching orders:', error);
         return [];
     }
-    return data;
+    return data || [];
 }
 
 async function getOrderById(orderId) {
-    const { data, error } = await supabase
+    const { data, error } = await sb
         .from('orders')
         .select('*')
         .eq('order_id', orderId)
@@ -133,8 +159,9 @@ async function getOrderById(orderId) {
 }
 
 // Admin functions
-async function getAllOrders(statusFilter = null) {
-    let query = supabase
+async function getAllOrders(statusFilter) {
+    if (!sb) return [];
+    var query = sb
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
@@ -148,11 +175,11 @@ async function getAllOrders(statusFilter = null) {
         console.error('Error fetching orders:', error);
         return [];
     }
-    return data;
+    return data || [];
 }
 
 async function updateOrderStatus(orderId, newStatus) {
-    const { data, error } = await supabase
+    const { data, error } = await sb
         .from('orders')
         .update({
             status: newStatus,
@@ -177,7 +204,8 @@ async function updateOrderStatus(orderId, newStatus) {
 }
 
 async function getAllUsers() {
-    const { data, error } = await supabase
+    if (!sb) return [];
+    const { data, error } = await sb
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
@@ -186,15 +214,17 @@ async function getAllUsers() {
         console.error('Error fetching users:', error);
         return [];
     }
-    return data;
+    return data || [];
 }
 
 async function getDashboardStats() {
-    const { data: orders } = await supabase
+    if (!sb) return null;
+
+    const { data: orders } = await sb
         .from('orders')
         .select('total, status, created_at');
 
-    const { data: users } = await supabase
+    const { data: users } = await sb
         .from('profiles')
         .select('id, created_at');
 
@@ -232,13 +262,10 @@ async function getDashboardStats() {
 // ============================================
 
 async function sendOrderEmail(order) {
-    if (typeof emailjs === 'undefined') {
-        console.warn('EmailJS not loaded');
-        return;
-    }
+    if (typeof emailjs === 'undefined') return;
 
     const itemsList = order.items.map(item =>
-        `${item.name} x${item.qty} — ₹${item.price * item.qty}`
+        item.name + ' x' + item.qty + ' — ₹' + (item.price * item.qty)
     ).join('\n');
 
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ORDER_TEMPLATE_ID, {
@@ -282,7 +309,6 @@ async function sendStatusUpdateEmail(order, status) {
 async function updateAuthUI() {
     const user = await getUser();
 
-    // Update nav elements that show login/account
     const loginLinks = document.querySelectorAll('.auth-login-link');
     const accountLinks = document.querySelectorAll('.auth-account-link');
     const userNames = document.querySelectorAll('.auth-user-name');
@@ -302,24 +328,21 @@ async function updateAuthUI() {
 
 // Listen for auth state changes
 function setupAuthListener() {
-    if (!supabase) return;
-    supabase.auth.onAuthStateChange((event, session) => {
+    if (!sb) return;
+    sb.auth.onAuthStateChange(function (event, session) {
         console.log('Auth event:', event);
         updateAuthUI();
     });
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    // Wait for Supabase to load
-    const checkInterval = setInterval(() => {
-        if (initSupabase()) {
+document.addEventListener('DOMContentLoaded', function () {
+    var checkInterval = setInterval(function () {
+        if (sb) {
             clearInterval(checkInterval);
             setupAuthListener();
             updateAuthUI();
         }
-    }, 100);
-
-    // Timeout after 5 seconds
-    setTimeout(() => clearInterval(checkInterval), 5000);
+    }, 200);
+    setTimeout(function () { clearInterval(checkInterval); }, 5000);
 });

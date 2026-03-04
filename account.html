@@ -252,11 +252,11 @@
     <nav class="fixed top-0 left-0 right-0 z-50 bg-cream/95 backdrop-blur-sm shadow-sm">
         <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
             <div class="flex items-center justify-between h-14 md:h-20">
-                <a href="index.html" class="font-serif text-2xl tracking-wide text-charcoal">
+                <a href="/" class="font-serif text-2xl tracking-wide text-charcoal">
                     Sesame & Jaggery
                 </a>
                 <div class="flex items-center gap-4 md:gap-6">
-                    <a href="index.html"
+                    <a href="/"
                         class="text-sm font-light tracking-wide text-stone hover:text-charcoal transition-colors">Shop</a>
                     <button onclick="handleLogout()"
                         class="text-sm font-light tracking-wide text-stone hover:text-red-500 transition-colors">Sign
@@ -348,7 +348,7 @@
                     <div id="sectionOrders" class="content-panel active">
                         <div class="flex items-center justify-between mb-6">
                             <h2 class="font-serif text-xl md:text-2xl text-charcoal">My Orders</h2>
-                            <a href="index.html#food"
+                            <a href="/#food"
                                 class="text-xs text-olive hover:text-charcoal transition-colors flex items-center gap-1">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -384,7 +384,7 @@
                             </div>
                             <p class="text-stone font-light mb-2">No orders yet</p>
                             <p class="text-xs text-stone/60 mb-6">When you place an order, it will appear here</p>
-                            <a href="index.html#food"
+                            <a href="/#food"
                                 class="inline-flex items-center gap-2 px-6 py-3 bg-charcoal text-cream text-sm rounded-lg hover:bg-charcoal/90 transition-colors">
                                 Start Shopping
                             </a>
@@ -733,7 +733,7 @@
             const phone = document.getElementById('profilePhone').value;
 
             try {
-                const { error } = await supabase.from('profiles').upsert({
+                const { error } = await sb.from('profiles').upsert({
                     id: user.id,
                     full_name: name,
                     phone: phone,
@@ -757,7 +757,7 @@
             const user = await getUser();
             if (!user) return;
 
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('addresses')
                 .select('*')
                 .eq('user_id', user.id)
@@ -793,7 +793,7 @@
             const user = await getUser();
             if (!user) return;
 
-            const { error } = await supabase.from('addresses').insert({
+            const { error } = await sb.from('addresses').insert({
                 user_id: user.id,
                 label: document.getElementById('addressLabel').value,
                 address: document.getElementById('addressFull').value,
@@ -811,7 +811,7 @@
         }
 
         async function deleteAddress(id) {
-            const { error } = await supabase.from('addresses').delete().eq('id', id);
+            const { error } = await sb.from('addresses').delete().eq('id', id);
             if (!error) {
                 showToast('Address removed', 'success');
                 await loadAddresses();
@@ -822,10 +822,10 @@
         // LOGOUT
         // ============================================
         async function handleLogout() {
-            if (supabase) {
-                await supabase.auth.signOut();
+            if (sb) {
+                await sb.auth.signOut();
             }
-            window.location.href = 'login.html';
+            window.location.href = '/login';
         }
 
         // ============================================
@@ -833,11 +833,11 @@
         // ============================================
         document.addEventListener('DOMContentLoaded', () => {
             const checkInterval = setInterval(async () => {
-                if (supabase) {
+                if (sb) {
                     clearInterval(checkInterval);
                     const user = await getUser();
                     if (!user) {
-                        window.location.href = 'login.html';
+                        window.location.href = '/login';
                         return;
                     }
                     loadUserData();

@@ -348,7 +348,7 @@
             </div>
             <h2 class="font-serif text-2xl text-charcoal mb-2">Access Denied</h2>
             <p class="text-stone text-sm mb-6">You don't have admin privileges.</p>
-            <a href="index.html" class="px-6 py-3 bg-charcoal text-cream text-sm rounded-lg hover:bg-charcoal/90">Go to
+            <a href="/" class="px-6 py-3 bg-charcoal text-cream text-sm rounded-lg hover:bg-charcoal/90">Go to
                 Store</a>
         </div>
     </div>
@@ -359,7 +359,7 @@
         <aside id="adminSidebar" class="admin-sidebar w-[240px] flex-shrink-0 flex flex-col p-4">
             <!-- Logo -->
             <div class="px-3 pt-2 pb-6">
-                <a href="index.html" class="font-serif text-xl text-cream/80 tracking-wide">S&J Admin</a>
+                <a href="/" class="font-serif text-xl text-cream/80 tracking-wide">S&J Admin</a>
                 <p class="text-[10px] text-cream/30 mt-1">Management Panel</p>
             </div>
 
@@ -436,8 +436,8 @@
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </button>
-                    <a href="index.html"
-                        class="text-xs text-stone hover:text-charcoal transition-colors hidden md:inline">View Store
+                    <a href="/" class="text-xs text-stone hover:text-charcoal transition-colors hidden md:inline">View
+                        Store
                         →</a>
                 </div>
             </header>
@@ -622,7 +622,7 @@
     </div>
 
     <!-- Supabase Config -->
-    <script src="js/supabase-config.js"></script>
+    <script src="/js/supabase-config.js"></script>
 
     <script>
         // ============================================
@@ -714,7 +714,7 @@
         }
 
         async function buildRevenueChart() {
-            const { data: orders } = await supabase
+            const { data: orders } = await sb
                 .from('orders')
                 .select('total, created_at')
                 .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
@@ -983,8 +983,8 @@
         // ADMIN LOGOUT
         // ============================================
         async function adminLogout() {
-            if (supabase) await supabase.auth.signOut();
-            window.location.href = 'login.html';
+            if (sb) await sb.auth.signOut();
+            window.location.href = '/login';
         }
 
         // ============================================
@@ -1006,13 +1006,13 @@
             }
 
             const checkInterval = setInterval(async () => {
-                if (supabase) {
+                if (sb) {
                     clearInterval(checkInterval);
 
                     // Check auth & admin status
                     const user = await getUser();
                     if (!user) {
-                        window.location.href = 'login.html';
+                        window.location.href = '/login';
                         return;
                     }
 
