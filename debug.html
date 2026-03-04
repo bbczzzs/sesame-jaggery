@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Debug</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body style="font-family:monospace;padding:20px;background:#111;color:#0f0">
+    <h2>Supabase Debug</h2>
+    <pre id="out">Loading...</pre>
+    <script>
+        async function debug() {
+            const el = document.getElementById('out');
+            const log = [];
+
+            log.push('1. CDN loaded: ' + (typeof window.supabase !== 'undefined'));
+            log.push('2. createClient exists: ' + (window.supabase && typeof window.supabase.createClient === 'function'));
+
+            try {
+                const client = window.supabase.createClient(
+                    'https://bzxsitulvkhnjilbgehz.supabase.co',
+                    'sb_publishable_FOYTerCWuiEza68qVziDOA_QJjR5yUm'
+                );
+                log.push('3. Client created: ' + !!client);
+
+                // Check session
+                const { data: sessionData, error: sessionErr } = await client.auth.getSession();
+                log.push('4. Session: ' + (sessionData?.session ? 'YES - ' + sessionData.session.user.email : 'NO'));
+                if (sessionErr) log.push('4. Session Error: ' + sessionErr.message);
+
+                // Try profiles query
+                const { data: profiles, error: profileErr } = await client.from('profiles').select('*').limit(5);
+                log.push('5. Profiles query: ' + JSON.stringify(profiles));
+                if (profileErr) log.push('5. Profile Error: ' + JSON.stringify(profileErr));
+
+                // Try orders query
+                const { data: orders, error: orderErr } = await client.from('orders').select('*').limit(5);
+                log.push('6. Orders query: ' + JSON.stringify(orders));
+                if (orderErr) log.push('6. Orders Error: ' + JSON.stringify(orderErr));
+
+            } catch (e) {
+                log.push('ERROR: ' + e.message);
+            }
+
+            el.textContent = log.join('\n\n');
+        }
+        setTimeout(debug, 1000);
+    </script>
+</body>
+
+</html>
