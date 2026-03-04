@@ -54,7 +54,18 @@ CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_addresses_user_id ON addresses(user_id);
 
--- 5. ROW LEVEL SECURITY (RLS) Policies
+-- 5. ADMIN CHECK FUNCTION (SECURITY DEFINER to avoid RLS recursion)
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 FROM public.profiles 
+        WHERE id = auth.uid() AND role = 'admin'
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 6. ROW LEVEL SECURITY (RLS) Policies
 
 -- Enable RLS on all tables
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -76,11 +87,7 @@ CREATE POLICY "Users can insert own profile"
 
 CREATE POLICY "Admins can view all profiles"
     ON profiles FOR SELECT
-    USING (
-        EXISTS (
-            SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'
-        )
-    );
+    USING (public.is_admin());
 
 -- ORDERS: Users can view their own orders. Admins can view/update all.
 CREATE POLICY "Users can view own orders"
@@ -93,19 +100,11 @@ CREATE POLICY "Users can create orders"
 
 CREATE POLICY "Admins can view all orders"
     ON orders FOR SELECT
-    USING (
-        EXISTS (
-            SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'
-        )
-    );
+    USING (public.is_admin());
 
 CREATE POLICY "Admins can update all orders"
     ON orders FOR UPDATE
-    USING (
-        EXISTS (
-            SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'
-        )
-    );
+    USING (public.is_admin());
 
 -- ADDRESSES: Users can manage their own addresses.
 CREATE POLICY "Users can view own addresses"
@@ -120,7 +119,7 @@ CREATE POLICY "Users can delete own addresses"
     ON addresses FOR DELETE
     USING (user_id = auth.uid());
 
--- 6. AUTO-CREATE PROFILE on user signup
+-- 7. AUTO-CREATE PROFILE on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -147,13 +146,9 @@ CREATE TRIGGER on_auth_user_created
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_new_user();
 
--- 7. MAKE YOURSELF ADMIN
--- Replace 'your-email@example.com' with your actual email
--- Run this AFTER you've registered an account:
---
--- UPDATE profiles SET role = 'admin' WHERE email = 'your-email@example.com';
---
 -- ============================================
-
--- DONE! ✅
--- Your database is now set up and ready to use.
+-- DONE! Your database is now set up.
+-- 
+-- MAKE YOURSELF ADMIN after registering:
+-- UPDATE profiles SET role = 'admin' WHERE email = 'your-email@example.com';
+-- ============================================
